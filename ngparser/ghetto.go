@@ -2,6 +2,7 @@ package ngparser
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"path/filepath"
 	"regexp"
@@ -11,6 +12,7 @@ import (
 	"time"
 
 	"github.com/ricocheting/logparse/storage"
+	"github.com/ricocheting/logparse/internal"
 )
 
 type StatType uint8
@@ -43,10 +45,7 @@ type Record struct {
 	UserAgent string
 }
 
-type Stat struct {
-	Name  string
-	Value uint64
-}
+type Stat = internal.Stat
 
 type stats map[string]uint64
 
@@ -66,14 +65,23 @@ type Parser struct {
 	data  [maxType]stats
 	count uint64
 	ipv6  uint64
+	store *storage.Store
 }
 
 func New() *Parser {
-	var p Parser
-	for i := range p.data {
-		p.data[i] = stats{}
+	store := storage.NewStore(filepath.Join("data", "db"))
+	if err := store.Open(); err != nil {
+		panic("Error opening storage (db possibly still open by another process): " + err.Error())
 	}
-	return &p
+
+	var data [maxType]stats
+	for i := range data {
+		data[i] = stats{}
+	}
+	return &Parser{
+		store: store,
+		data:  data,
+	}
 }
 
 func (p *Parser) Parse(r io.Reader, fn func(r *Record)) {
@@ -115,11 +123,18 @@ func (p *Parser) Parse(r io.Reader, fn func(r *Record)) {
 		if startDate.IsZero() {
 			startDate = r.TS
 		} else if isNewerDay(startDate, r.TS) {
-			// insert p.data into buckets
-			// clear p.data
-			//fmt.Printf("isNewerDay: %+v  OR  %+v\n", r.TS, startDate)
-			p.saveData([]byte(r.TS.Format("20060102")))
 			startDate = r.TS
+			// insert p.data into buckets
+			p.saveData([]byte(startDate.Format("20060102")))
+			// clear p.data
+			fmt.Printf("savedata before: %+v \n", p.Count())
+			var data [maxType]stats
+			for i := range data {
+				p.data[i] = stats{}
+			}
+			p.count = 0
+			p.ipv6 = 0
+			fmt.Printf("savedata after: %+v \n", p.Count())
 		}
 
 		p.mux.Lock()
@@ -145,6 +160,8 @@ func (p *Parser) Parse(r io.Reader, fn func(r *Record)) {
 
 		p.mux.Unlock()
 	}
+
+	p.saveData([]byte(startDate.Format("20060102")))
 }
 
 // get a specific type of stat in the log
@@ -224,13 +241,9 @@ func isNewerDay(startDate, compDate time.Time) bool {
 }
 
 func (p *Parser) saveData(dateKey []byte) {
-	store = storage.NewStore(filepath.Join("data", "db"))
-	if err := store.Open(); err != nil {
-		panic("Error opening storage (db possibly still open by another process): " + err.Error())
-	}
 
-	err := store.SaveHits(dateKey, p.Count())
-	//err := store.SaveExtensions(dateKey, p.data[Extensions])
+	//err := p.store.SaveHits(dateKey, p.Count())
+	err := store.SaveExtensions(dateKey, p.data[Extensions])
 
 	if err != nil {
 		panic("Error saveData(): " + err.Error())

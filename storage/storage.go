@@ -15,7 +15,7 @@ var (
 	statusCodesBucket = []byte("statuscode")
 	ipsBucket         = []byte("ips")
 	errBucketNotFound = errors.New("Bucket not found")
-	errActIDExists    = errors.New("ActID already associated with Task")
+	//errActIDExists    = errors.New("ActID already associated with Task")
 )
 
 // Store represents the data storage for storing messages received and sent.
