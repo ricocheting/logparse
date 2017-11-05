@@ -11,8 +11,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ricocheting/logparse/storage"
 	"github.com/ricocheting/logparse/internal"
+	"github.com/ricocheting/logparse/storage"
 )
 
 type StatType uint8
@@ -32,6 +32,7 @@ const (
 )
 
 var re = regexp.MustCompile(`(.+?)\s[^[]+\[([^\]]+)\]\s"(\w+) (.+?)\sHTTP/(\d\.\d)"\s+(\d+)\s+(\d+)\s+"([^"]+)"\s+"([^"]+)"`)
+
 //var store *storage.Store
 
 // $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" "$http_x_forwarded_for";
@@ -46,23 +47,11 @@ type Record struct {
 }
 
 type Stat = internal.Stat
-
-type stats map[string]uint64
-
-func (s stats) ToSlice(min uint64) []Stat {
-	out := make([]Stat, 0, len(s))
-	for k, v := range s {
-		if min > 0 && v < min {
-			continue
-		}
-		out = append(out, Stat{k, v})
-	}
-	return out[:len(out):len(out)] // trim the slice to release the unused memory
-}
+type Stats = internal.Stats
 
 type Parser struct {
 	mux   sync.RWMutex
-	data  [maxType]stats
+	data  [maxType]Stats
 	count uint64
 	ipv6  uint64
 	store *storage.Store
@@ -74,9 +63,9 @@ func New() *Parser {
 		panic("Error opening storage (db possibly still open by another process): " + err.Error())
 	}
 
-	var data [maxType]stats
+	var data [maxType]Stats
 	for i := range data {
-		data[i] = stats{}
+		data[i] = Stats{}
 	}
 	return &Parser{
 		store: store,
@@ -128,9 +117,9 @@ func (p *Parser) Parse(r io.Reader, fn func(r *Record)) {
 			p.saveData([]byte(startDate.Format("20060102")))
 			// clear p.data
 			fmt.Printf("savedata before: %+v \n", p.Count())
-			var data [maxType]stats
+			var data [maxType]Stats
 			for i := range data {
-				p.data[i] = stats{}
+				p.data[i] = Stats{}
 			}
 			p.count = 0
 			p.ipv6 = 0
@@ -243,7 +232,7 @@ func isNewerDay(startDate, compDate time.Time) bool {
 func (p *Parser) saveData(dateKey []byte) {
 
 	//err := p.store.SaveHits(dateKey, p.Count())
-	err := store.SaveExtensions(dateKey, p.data[Extensions])
+	err := p.store.SaveExtensions(dateKey, p.data[Extensions])
 
 	if err != nil {
 		panic("Error saveData(): " + err.Error())

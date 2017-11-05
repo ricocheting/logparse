@@ -10,6 +10,7 @@ import (
 )
 
 type Stat = internal.Stat
+type Stats = internal.Stats
 
 // SaveHits insert or update the total number of hits to the YYYYMMDD key
 func (st *Store) SaveHits(dateKey []byte, hits uint64) error {
@@ -33,8 +34,9 @@ func (st *Store) SaveHits(dateKey []byte, hits uint64) error {
 }
 
 // SaveExtensions insert or update the total number of hits to the YYYYMMDD key
-func (st *Store) SaveExtensions(dateKey []byte, data Stat) error {
+func (st *Store) SaveExtensions(dateKey []byte, data Stats) error {
 	// TODO: needs error checking
+	sorted := data.ToSlice(0)
 
 	return st.db.Batch(func(tx *bolt.Tx) error {
 		b := tx.Bucket(extensionsBucket)
@@ -48,7 +50,7 @@ func (st *Store) SaveExtensions(dateKey []byte, data Stat) error {
 		fmt.Printf("Hits: %+v = %s = %s\n", string(dateKey), oldVal, stats)
 
 		// yes, I'm broken because data is not an array
-		for i, e := range data {
+		for i, e := range sorted {
 			fmt.Printf("Extensions: %+v = %s\n", i, e)
 			// i is the index, e the element
 			// if stats[i] exists, I need to add data[i] value to it.
