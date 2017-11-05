@@ -6,6 +6,7 @@ package main
 import (
 	"fmt"
 	"path/filepath"
+	"runtime"
 	"testing"
 )
 
@@ -18,4 +19,9 @@ func TestFilenameParse(t *testing.T) {
 	fmt.Printf("extention: " + ext + "\n")
 	fmt.Printf("Last: " + filepath.Dir(basename) + "\n")
 
+}
+
+// RAW dump the users in the database
+func TestCPU(t *testing.T) {
+	fmt.Printf("number of CPU: %+v\n", runtime.NumCPU())
 }

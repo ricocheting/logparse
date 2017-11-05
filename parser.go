@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	f, err := os.Open("junk/access.log")
+	f, err := os.Open("junk/short.access.log")
 	if err != nil {
 		log.Fatal(err)
 	}

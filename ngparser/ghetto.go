@@ -5,11 +5,12 @@ import (
 	"io"
 	"path/filepath"
 	"regexp"
-	"runtime"
 	"sort"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/ricocheting/logparse/storage"
 )
 
 type StatType uint8
@@ -28,7 +29,8 @@ const (
 	timeFmt = `2/Jan/2006:15:04:05 -0700`
 )
 
-var re = regexp.MustCompile(`(.+?)\s[^[]+\[([^]]+)\]\s"(\w+) (.+?)\sHTTP/(\d\.\d)"\s+(\d+)\s+(\d+)\s+"([^"]+)"\s+"([^"]+)"`)
+var re = regexp.MustCompile(`(.+?)\s[^[]+\[([^\]]+)\]\s"(\w+) (.+?)\sHTTP/(\d\.\d)"\s+(\d+)\s+(\d+)\s+"([^"]+)"\s+"([^"]+)"`)
+var store *storage.Store
 
 // $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" "$http_x_forwarded_for";
 type Record struct {
@@ -79,8 +81,8 @@ func (p *Parser) Parse(r io.Reader, fn func(r *Record)) {
 	// defer p.mux.Unlock()
 	var (
 		sc  = bufio.NewScanner(r)
-		in  = make(chan string, runtime.NumCPU())
-		out = make(chan *Record, runtime.NumCPU())
+		in  = make(chan string, 1) //runtime.NumCPU()
+		out = make(chan *Record, 1)
 		wg  sync.WaitGroup
 	)
 
@@ -98,6 +100,8 @@ func (p *Parser) Parse(r io.Reader, fn func(r *Record)) {
 		close(out)
 	}()
 
+	var startDate time.Time
+
 	for r := range out {
 		if fn != nil {
 			fn(r)
@@ -106,6 +110,16 @@ func (p *Parser) Parse(r io.Reader, fn func(r *Record)) {
 		cleanPath := r.Filename
 		if idx := strings.IndexByte(cleanPath, '?'); idx != -1 {
 			cleanPath = cleanPath[:idx]
+		}
+
+		if startDate.IsZero() {
+			startDate = r.TS
+		} else if isNewerDay(startDate, r.TS) {
+			// insert p.data into buckets
+			// clear p.data
+			//fmt.Printf("isNewerDay: %+v  OR  %+v\n", r.TS, startDate)
+			p.saveData([]byte(r.TS.Format("20060102")))
+			startDate = r.TS
 		}
 
 		p.mux.Lock()
@@ -121,6 +135,7 @@ func (p *Parser) Parse(r io.Reader, fn func(r *Record)) {
 		p.data[IPs][r.IP] = ipCnt + 1
 		p.data[StatusCodes][r.Status]++
 
+		// if the page exists, save its info
 		if r.Status != "404" {
 			p.data[Pages][cleanPath]++
 			//p.data[Hits][r.Filename]++
@@ -195,4 +210,29 @@ func (p *Parser) parseLine(wg *sync.WaitGroup, in chan string, out chan *Record)
 		out <- r
 	}
 	wg.Done()
+}
+
+func isNewerDay(startDate, compDate time.Time) bool {
+	/*y1, m1, d1 := date1.Date()
+	y2, m2, d2 := date2.Date()
+	return y1 == y2 && m1 == m2 && d1 == d2*/
+
+	d1 := startDate.Truncate(24 * time.Hour)
+	d2 := compDate.Truncate(24 * time.Hour)
+
+	return !(d1.Equal(d2) || d2.Before(d1))
+}
+
+func (p *Parser) saveData(dateKey []byte) {
+	store = storage.NewStore(filepath.Join("data", "db"))
+	if err := store.Open(); err != nil {
+		panic("Error opening storage (db possibly still open by another process): " + err.Error())
+	}
+
+	err := store.SaveHits(dateKey, p.Count())
+
+	if err != nil {
+		panic("Error saveData(): " + err.Error())
+	}
+
 }
