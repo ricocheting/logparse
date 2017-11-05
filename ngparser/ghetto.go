@@ -230,6 +230,7 @@ func (p *Parser) saveData(dateKey []byte) {
 	}
 
 	err := store.SaveHits(dateKey, p.Count())
+	//err := store.SaveExtensions(dateKey, p.data[Extensions])
 
 	if err != nil {
 		panic("Error saveData(): " + err.Error())

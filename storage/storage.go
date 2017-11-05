@@ -11,8 +11,8 @@ var (
 	namesBucket       = []byte("buckets")
 	yearBucket        = []byte("year")
 	hitsBucket        = []byte("hits")
-	extensionBucket   = []byte("extension")
-	statusCodeBucket  = []byte("statuscode")
+	extensionsBucket  = []byte("extension")
+	statusCodesBucket = []byte("statuscode")
 	ipsBucket         = []byte("ips")
 	errBucketNotFound = errors.New("Bucket not found")
 	errActIDExists    = errors.New("ActID already associated with Task")
@@ -47,8 +47,8 @@ func (st *Store) Open() error {
 	if err := st.db.Update(func(tx *bolt.Tx) error {
 		tx.CreateBucketIfNotExists(yearBucket)
 		tx.CreateBucketIfNotExists(hitsBucket)
-		tx.CreateBucketIfNotExists(extensionBucket)
-		tx.CreateBucketIfNotExists(statusCodeBucket)
+		tx.CreateBucketIfNotExists(extensionsBucket)
+		tx.CreateBucketIfNotExists(statusCodesBucket)
 		tx.CreateBucketIfNotExists(ipsBucket)
 		return nil
 	}); err != nil {

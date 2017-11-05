@@ -11,9 +11,9 @@ import (
 	"github.com/boltdb/bolt"
 )
 
-// RAW dump the users in the database
+// RAW dump the hits in the database
 func TestDumpRawBoltHitsData(t *testing.T) {
-	fmt.Println("We're Running")
+	fmt.Println("TestDumpRawBoltHitsData")
 
 	db, err := bolt.Open("../data/db", 0600, nil)
 	if err != nil {
@@ -23,10 +23,32 @@ func TestDumpRawBoltHitsData(t *testing.T) {
 
 	db.View(func(tx *bolt.Tx) error {
 		// Assume bucket exists and has keys
-		b := tx.Bucket([]byte("hits"))
+		b := tx.Bucket([]byte(hitsBucket))
 
 		b.ForEach(func(k []byte, v []byte) error {
 			fmt.Printf("key=%s, value=%v\n", k, v)
+			return nil
+		})
+		return nil
+	})
+}
+
+// RAW dump the extensions in the database
+func TestDumpRawBoltExtensionsData(t *testing.T) {
+	fmt.Println("TestDumpRawBoltExtensionsData")
+
+	db, err := bolt.Open("../data/db", 0600, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	db.View(func(tx *bolt.Tx) error {
+		// Assume bucket exists and has keys
+		b := tx.Bucket([]byte(extensionsBucket))
+
+		b.ForEach(func(k []byte, v []byte) error {
+			fmt.Printf("key=%s, value=%s\n", k, v)
 			return nil
 		})
 		return nil
