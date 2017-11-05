@@ -47,8 +47,9 @@ func (st *Store) SaveExtensions(dateKey []byte, data Stat) error {
 
 		fmt.Printf("Hits: %+v = %s = %s\n", string(dateKey), oldVal, stats)
 
+		// yes, I'm broken because data is not an array
 		for i, e := range data {
-			fmt.Printf("Hits: %+v = %s\n", i, e)
+			fmt.Printf("Extensions: %+v = %s\n", i, e)
 			// i is the index, e the element
 			// if stats[i] exists, I need to add data[i] value to it.
 			// if it doesn't exist, I need to create it
@@ -60,7 +61,7 @@ func (st *Store) SaveExtensions(dateKey []byte, data Stat) error {
 			return err
 		}
 
-		//fmt.Printf("Hits: %+v = %+v\n", string(dateKey), newVal)
+		//fmt.Printf("Extensions: %+v = %+v\n", string(dateKey), newVal)
 		b.Put(dateKey, buf)
 
 		return nil

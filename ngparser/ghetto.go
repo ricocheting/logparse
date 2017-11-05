@@ -32,7 +32,7 @@ const (
 )
 
 var re = regexp.MustCompile(`(.+?)\s[^[]+\[([^\]]+)\]\s"(\w+) (.+?)\sHTTP/(\d\.\d)"\s+(\d+)\s+(\d+)\s+"([^"]+)"\s+"([^"]+)"`)
-var store *storage.Store
+//var store *storage.Store
 
 // $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" "$http_x_forwarded_for";
 type Record struct {
