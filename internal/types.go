@@ -7,6 +7,27 @@ type Stat struct {
 
 type Stats map[string]uint64
 
+type StatCollection struct {
+	Collect map[string]Stats //[YYYYMMDD][".jpg"]=35
+}
+
+/*func (sc *StatCollection) Add(key0, key1 string, val uint64) {
+	st := sc.Collect[key0]
+	if st == nil {
+		st = Stats{}
+		sc.Collect[key0] = st
+	}
+	st[key1] += val
+}*/
+func (sc *StatCollection) Add(dateKey, name string, val uint64) {
+	st := sc.Collect[dateKey]
+	if st == nil {
+		st = Stats{}
+		sc.Collect[dateKey] = st
+	}
+	st[name] = val
+}
+
 var (
 	//namesBucket       = []byte("buckets")
 	YearBucket        = []byte("year")

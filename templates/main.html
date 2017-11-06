@@ -1,0 +1,29 @@
+
+<div id="contents">
+{{range .Hits}}
+	<div>
+		<div class="info">{{.Name}}</div>
+		<div class="img">{{.Value}}</div>
+	</div>
+{{end}}
+</div>
+
+<div id="contents">
+{{range .IPS}}
+	<div>
+		<div class="info">{{.Name}}</div>
+		<div class="img">{{.Value}}</div>
+	</div>
+{{end}}
+</div>
+
+<div id="contents">
+{{range .Extensions}}
+	<div>
+	{{range .Collect}}
+		<div class="info">{{.Name}}</div>
+		<div class="img">{{.Value}}</div>
+	{{end}}
+	</div>
+{{end}}
+</div>
