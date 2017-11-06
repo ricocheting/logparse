@@ -1,21 +1,10 @@
 package storage
 
 import (
-	"errors"
 	"time"
 
 	"github.com/boltdb/bolt"
-)
-
-var (
-	namesBucket       = []byte("buckets")
-	yearBucket        = []byte("year")
-	hitsBucket        = []byte("hits")
-	extensionsBucket  = []byte("extension")
-	statusCodesBucket = []byte("statuscode")
-	ipsBucket         = []byte("ips")
-	errBucketNotFound = errors.New("Bucket not found")
-	//errActIDExists    = errors.New("ActID already associated with Task")
+	"github.com/ricocheting/logparse/internal"
 )
 
 // Store represents the data storage for storing messages received and sent.
@@ -45,11 +34,11 @@ func (st *Store) Open() error {
 
 	// Initialize all the required buckets
 	if err := st.db.Update(func(tx *bolt.Tx) error {
-		tx.CreateBucketIfNotExists(yearBucket)
-		tx.CreateBucketIfNotExists(hitsBucket)
-		tx.CreateBucketIfNotExists(extensionsBucket)
-		tx.CreateBucketIfNotExists(statusCodesBucket)
-		tx.CreateBucketIfNotExists(ipsBucket)
+		tx.CreateBucketIfNotExists(internal.YearBucket)
+		tx.CreateBucketIfNotExists(internal.HitsBucket)
+		tx.CreateBucketIfNotExists(internal.ExtensionsBucket)
+		tx.CreateBucketIfNotExists(internal.StatusCodesBucket)
+		tx.CreateBucketIfNotExists(internal.IPSBucket)
 		return nil
 	}); err != nil {
 		st.Close()

@@ -229,11 +229,27 @@ func isNewerDay(startDate, compDate time.Time) bool {
 
 func (p *Parser) saveData(dateKey []byte) {
 
-	//err := p.store.SaveHits(dateKey, p.Count())
-	err := p.store.SaveExtensions(dateKey, p.data[Extensions])
-
+	// Hits
+	err := p.store.SaveBaseNumber(internal.HitsBucket, dateKey, p.Count())
 	if err != nil {
-		panic("Error saveData(): " + err.Error())
+		panic("Error saveData() Hits:" + err.Error())
 	}
 
+	// Ips
+	err = p.store.SaveBaseNumber(internal.IPSBucket, dateKey, uint64(len(p.data[IPs])))
+	if err != nil {
+		panic("Error saveData() Ips:" + err.Error())
+	}
+
+	//Extensions
+	err = p.store.SaveBaseStats(internal.ExtensionsBucket, dateKey, p.data[Extensions])
+	if err != nil {
+		panic("Error saveData() Extensions: " + err.Error())
+	}
+
+	//StatusCodes
+	err = p.store.SaveBaseStats(internal.StatusCodesBucket, dateKey, p.data[StatusCodes])
+	if err != nil {
+		panic("Error saveData() StatusCodes: " + err.Error())
+	}
 }

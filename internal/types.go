@@ -17,3 +17,14 @@ func (s Stats) ToSlice(min uint64) []Stat {
 	}
 	return out[:len(out):len(out)] // trim the slice to release the unused memory
 }
+
+var (
+	//namesBucket       = []byte("buckets")
+	YearBucket        = []byte("year")
+	HitsBucket        = []byte("hits")
+	ExtensionsBucket  = []byte("extensions")
+	StatusCodesBucket = []byte("statuscodes")
+	IPSBucket         = []byte("ips")
+	//errBucketNotFound = errors.New("Bucket not found")
+	//errActIDExists    = errors.New("ActID already associated with Task")
+)

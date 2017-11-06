@@ -1,6 +1,7 @@
 package storage
 
 import "github.com/boltdb/bolt"
+import "github.com/ricocheting/logparse/internal"
 
 // ListTasks to return array of all tasks in the database (that match certain criteria)
 // priority parameter is option. If a blank string is passed in, all records are returned
@@ -10,7 +11,7 @@ func (st *Store) ListHits() ([]Stat, error) {
 
 	return stats, st.db.View(func(tx *bolt.Tx) error {
 		// Assume bucket exists and has keys
-		b := tx.Bucket(hitsBucket)
+		b := tx.Bucket(internal.HitsBucket)
 
 		// ForEach instead of b.Cursor() because we know we'll be iterating over all the keys
 		b.ForEach(func(k []byte, v []byte) error {

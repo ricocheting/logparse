@@ -8,8 +8,52 @@ import (
 	"log"
 	"testing"
 
+	"github.com/ricocheting/logparse/internal"
+
 	"github.com/boltdb/bolt"
 )
+
+// RAW dump the extensions in the database
+func TestDumpRawBoltAll(t *testing.T) {
+	fmt.Println("TestDumpRawBoltAll")
+
+	db, err := bolt.Open("../data/db", 0600, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	db.Batch(func(tx *bolt.Tx) error {
+		// Assume bucket exists and has keys
+		b := tx.Bucket([]byte(internal.HitsBucket))
+
+		b.ForEach(func(k []byte, v []byte) error {
+			fmt.Printf("HitsBucket key=%s, value=%v\n", k, v)
+			return nil
+		})
+
+		b = tx.Bucket([]byte(internal.IPSBucket))
+
+		b.ForEach(func(k []byte, v []byte) error {
+			fmt.Printf("IPSBucket key=%s, value=%v\n", k, v)
+			return nil
+		})
+
+		b = tx.Bucket([]byte(internal.ExtensionsBucket))
+
+		b.ForEach(func(k []byte, v []byte) error {
+			fmt.Printf("ExtensionsBucket key=%s, value=%s\n", k, v)
+			return nil
+		})
+		b = tx.Bucket([]byte(internal.StatusCodesBucket))
+
+		b.ForEach(func(k []byte, v []byte) error {
+			fmt.Printf("StatusCodesBucket key=%s, value=%s\n", k, v)
+			return nil
+		})
+		return nil
+	})
+}
 
 // RAW dump the hits in the database
 func TestDumpRawBoltHitsData(t *testing.T) {
@@ -23,7 +67,7 @@ func TestDumpRawBoltHitsData(t *testing.T) {
 
 	db.View(func(tx *bolt.Tx) error {
 		// Assume bucket exists and has keys
-		b := tx.Bucket([]byte(hitsBucket))
+		b := tx.Bucket([]byte(internal.HitsBucket))
 
 		b.ForEach(func(k []byte, v []byte) error {
 			fmt.Printf("key=%s, value=%v\n", k, v)
@@ -45,7 +89,7 @@ func TestDumpRawBoltExtensionsData(t *testing.T) {
 
 	db.View(func(tx *bolt.Tx) error {
 		// Assume bucket exists and has keys
-		b := tx.Bucket([]byte(extensionsBucket))
+		b := tx.Bucket([]byte(internal.ExtensionsBucket))
 
 		b.ForEach(func(k []byte, v []byte) error {
 			fmt.Printf("key=%s, value=%s\n", k, v)
