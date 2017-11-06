@@ -10,63 +10,7 @@ import (
 type Stat = internal.Stat
 type Stats = internal.Stats
 
-// SaveHits insert or update the total number of hits to the YYYYMMDD key
-/*func (st *Store) SaveHits(dateKey []byte, hits uint64) error {
-	// TODO: needs error checking
-
-	return st.db.Batch(func(tx *bolt.Tx) error {
-		b := tx.Bucket(hitsBucket)
-
-		oldVal := b.Get(dateKey)
-		newVal := itob(hits) // INSERT value
-
-		if oldVal != nil {
-			newVal = itob((hits + btoi(oldVal))) // UPDATE value
-		}
-
-		//fmt.Printf("Hits: %+v = %+v\n", string(dateKey), newVal)
-		b.Put(dateKey, newVal)
-
-		return nil
-	})
-}*/
-
-// SaveExtensions insert or update the total number of hits to the YYYYMMDD key
-/*func (st *Store) SaveExtensions(dateKey []byte, data Stats) error {
-	// TODO: needs error checking
-	//sorted := data.ToSlice(0)
-
-	return st.db.Batch(func(tx *bolt.Tx) error {
-		b := tx.Bucket(extensionsBucket)
-
-		oldRaw := b.Get(dateKey)
-
-		worker := Stats{}
-		json.Unmarshal(oldRaw, &worker)
-
-		// walk through the new data
-		for key, value := range data {
-			// if stats[i] exists, I need to add data[i] value to it.
-			if wVal, ok := worker[key]; ok {
-				worker[key] = wVal + value
-			} else { // if it doesn't exist, I need to create it
-				worker[key] = value
-			}
-		}
-
-		// save stats back up and insert it into the dtabase
-		buf, err := json.Marshal(worker) // INSERT value
-		if err != nil {
-			return err
-		}
-
-		b.Put(dateKey, buf)
-
-		return nil
-	})
-}*/
-
-// SaveBaseNumber insert or update the total number of hits to the YYYYMMDD key
+// SaveBaseNumber insert or update the bucket on the YYYYMMDD dateKey with value (if exists, adds value to existing amount)
 func (st *Store) SaveBaseNumber(bucket []byte, dateKey []byte, value uint64) error {
 	// TODO: needs error checking
 
@@ -87,21 +31,21 @@ func (st *Store) SaveBaseNumber(bucket []byte, dateKey []byte, value uint64) err
 	})
 }
 
+// SaveBaseStats insert or update the bucket on the YYYYMMDD dateKey with the Stats collection (if collection item exists, adds new value to existing amount)
 func (st *Store) SaveBaseStats(bucket []byte, dateKey []byte, data Stats) error {
 	// TODO: needs error checking
 	//sorted := data.ToSlice(0)
 
 	return st.db.Batch(func(tx *bolt.Tx) error {
 		b := tx.Bucket(bucket)
-
-		oldRaw := b.Get(dateKey)
+		raw := b.Get(dateKey)
 
 		worker := Stats{}
-		json.Unmarshal(oldRaw, &worker)
+		json.Unmarshal(raw, &worker)
 
 		// walk through the new data
 		for key, value := range data {
-			// if stats[i] exists, I need to add data[i] value to it.
+			// if stored worker[i] exists, I need to add data[i] value to it.
 			if wVal, ok := worker[key]; ok {
 				worker[key] = wVal + value
 			} else { // if it doesn't exist, I need to create it
@@ -110,7 +54,7 @@ func (st *Store) SaveBaseStats(bucket []byte, dateKey []byte, data Stats) error 
 		}
 
 		// save stats back up and insert it into the dtabase
-		buf, err := json.Marshal(worker) // INSERT value
+		buf, err := json.Marshal(worker)
 		if err != nil {
 			return err
 		}

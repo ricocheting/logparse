@@ -33,13 +33,3 @@ func main() {
 
 	//fmt.Println(p.IPsCount())
 }
-
-/*
-use boltdb to save those stats
-run the parser -> get the top 200 -> save that
-
-check and flag the day of the first record
-if any record rolls into the next day, write what we have currently processed to the database, clear the stats in memory, then continue parsing the log
-
-If bucket for next day exists, close out "yesterday" and add the tally to the monthly/yearly totals
-*/
