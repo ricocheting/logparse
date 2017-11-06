@@ -1,29 +1,40 @@
-
 <div id="contents">
-{{range .Hits}}
+	{{range .Hits}}
 	<div>
 		<div class="info">{{.Name}}</div>
 		<div class="img">{{.Value}}</div>
 	</div>
-{{end}}
-</div>
-
-<div id="contents">
-{{range .IPS}}
-	<div>
-		<div class="info">{{.Name}}</div>
-		<div class="img">{{.Value}}</div>
-	</div>
-{{end}}
-</div>
-
-<div id="contents">
-{{range .Extensions}}
-	<div>
-	{{range .Collect}}
-		<div class="info">{{.Name}}</div>
-		<div class="img">{{.Value}}</div>
 	{{end}}
+</div>
+
+<div id="contents">
+	{{range .IPS}}
+	<div>
+		<div class="info">{{.Name}}</div>
+		<div class="img">{{.Value}}</div>
 	</div>
-{{end}}
+	{{end}}
+</div>
+
+<div id="contents">
+	{{range $k, $v := .Extensions.Collect}} {{$k}}
+	<div>
+		{{range $name, $value := $v}}
+		<div class="info">{{$name}}</div>
+		<div class="img">{{$value}}</div>
+		{{end}}
+	</div>
+	{{end}}
+</div>
+
+
+<div id="contents">
+	{{range $k, $v := .StatusCodes.Collect}} {{$k}}
+	<div>
+		{{range $name, $value := $v}}
+		<div class="info">{{$name}}</div>
+		<div class="img">{{$value}}</div>
+		{{end}}
+	</div>
+	{{end}}
 </div>

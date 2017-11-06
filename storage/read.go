@@ -20,7 +20,6 @@ func (st *Store) FilterBaseNumber(bucket []byte, prefix []byte) ([]Stat, error) 
 
 			stat := Stat{Name: string(k[:]), Value: internal.Btoi(v)}
 
-			// TODO: this seems ineffecient
 			stats = append(stats, stat)
 		}
 
@@ -42,7 +41,6 @@ func (st *Store) ListBaseNumber(bucket []byte) ([]Stat, error) {
 
 			stat := Stat{Name: string(k[:]), Value: internal.Btoi(v)}
 
-			// TODO: this seems ineffecient
 			stats = append(stats, stat)
 
 			return nil
@@ -54,7 +52,9 @@ func (st *Store) ListBaseNumber(bucket []byte) ([]Stat, error) {
 
 // ListBaseStats
 func (st *Store) ListBaseStats(bucket []byte) (internal.StatCollection, error) {
-	var data = internal.StatCollection{}
+	var data = internal.StatCollection{
+		Collect: map[string]internal.Stats{},
+	}
 
 	return data, st.db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket(bucket)
