@@ -17,7 +17,7 @@ func (st *Store) ListHits() ([]Stat, error) {
 		b.ForEach(func(k []byte, v []byte) error {
 			//fmt.Printf("key=%s, value=%s\n", k, v)
 
-			stat := Stat{Name: string(k[:]), Value: btoi(v)}
+			stat := Stat{Name: string(k[:]), Value: internal.Btoi(v)}
 
 			stats = append(stats, stat)
 

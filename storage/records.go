@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"encoding/binary"
 	"encoding/json"
 
 	"github.com/boltdb/bolt"
@@ -75,10 +74,10 @@ func (st *Store) SaveBaseNumber(bucket []byte, dateKey []byte, value uint64) err
 		b := tx.Bucket(bucket)
 
 		oldVal := b.Get(dateKey)
-		newVal := itob(value) // INSERT value
+		newVal := internal.Itob(value) // INSERT value
 
 		if oldVal != nil {
-			newVal = itob((value + btoi(oldVal))) // UPDATE value
+			newVal = internal.Itob(value + internal.Btoi(oldVal)) // UPDATE value
 		}
 
 		//fmt.Printf("Hits: %+v = %+v\n", string(dateKey), newVal)
@@ -120,17 +119,4 @@ func (st *Store) SaveBaseStats(bucket []byte, dateKey []byte, data Stats) error 
 
 		return nil
 	})
-}
-
-// itob converts an uint64 to byte array
-func itob(i uint64) []byte {
-	b := make([]byte, 8)
-	binary.BigEndian.PutUint64(b, i)
-	return b
-}
-
-// btoi converts a byte array to uint64
-func btoi(b []byte) uint64 {
-	i := binary.BigEndian.Uint64(b)
-	return i
 }
