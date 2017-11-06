@@ -2,7 +2,6 @@ package ngparser
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 	"path/filepath"
 	"regexp"
@@ -115,15 +114,14 @@ func (p *Parser) Parse(r io.Reader, fn func(r *Record)) {
 			startDate = r.TS
 			// insert p.data into buckets
 			p.saveData([]byte(startDate.Format("20060102")))
+
 			// clear p.data
-			fmt.Printf("savedata before: %+v \n", p.Count())
 			var data [maxType]Stats
 			for i := range data {
 				p.data[i] = Stats{}
 			}
 			p.count = 0
 			p.ipv6 = 0
-			fmt.Printf("savedata after: %+v \n", p.Count())
 		}
 
 		p.mux.Lock()

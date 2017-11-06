@@ -3,7 +3,6 @@ package storage
 import (
 	"encoding/binary"
 	"encoding/json"
-	"fmt"
 
 	"github.com/boltdb/bolt"
 	"github.com/ricocheting/logparse/internal"
@@ -36,34 +35,32 @@ func (st *Store) SaveHits(dateKey []byte, hits uint64) error {
 // SaveExtensions insert or update the total number of hits to the YYYYMMDD key
 func (st *Store) SaveExtensions(dateKey []byte, data Stats) error {
 	// TODO: needs error checking
-	sorted := data.ToSlice(0)
+	//sorted := data.ToSlice(0)
 
 	return st.db.Batch(func(tx *bolt.Tx) error {
 		b := tx.Bucket(extensionsBucket)
 
-		oldVal := b.Get(dateKey)
+		oldRaw := b.Get(dateKey)
 
-		// trainwreck code. I need to read the old values,
-		var stats []Stat
-		json.Unmarshal(oldVal, &stats)
+		worker := Stats{}
+		json.Unmarshal(oldRaw, &worker)
 
-		fmt.Printf("Hits: %+v = %s = %s\n", string(dateKey), oldVal, stats)
-
-		// yes, I'm broken because data is not an array
-		for i, e := range sorted {
-			fmt.Printf("Extensions: %+v = %s\n", i, e)
-			// i is the index, e the element
+		// walk through the new data
+		for key, value := range data {
 			// if stats[i] exists, I need to add data[i] value to it.
-			// if it doesn't exist, I need to create it
+			if wVal, ok := worker[key]; ok {
+				worker[key] = wVal + value
+			} else { // if it doesn't exist, I need to create it
+				worker[key] = value
+			}
 		}
 
 		// save stats back up and insert it into the dtabase
-		buf, err := json.Marshal(stats) // INSERT value
+		buf, err := json.Marshal(worker) // INSERT value
 		if err != nil {
 			return err
 		}
 
-		//fmt.Printf("Extensions: %+v = %+v\n", string(dateKey), newVal)
 		b.Put(dateKey, buf)
 
 		return nil

@@ -35,7 +35,7 @@ func TestDumpRawBoltHitsData(t *testing.T) {
 
 // RAW dump the extensions in the database
 func TestDumpRawBoltExtensionsData(t *testing.T) {
-	fmt.Println("TestDumpRawBoltExtensionsData")
+	fmt.Println("\nTestDumpRawBoltExtensionsData")
 
 	db, err := bolt.Open("../data/db", 0600, nil)
 	if err != nil {
