@@ -8,7 +8,8 @@ type Stat struct {
 type Stats map[string]uint64
 
 type StatCollection struct {
-	Collect map[string]Stats //[YYYYMMDD][".jpg"]=35
+	GrandTotal uint64
+	Collect    map[string]Stats //[YYYYMMDD][".jpg"]=35
 }
 
 /*func (sc *StatCollection) Add(key0, key1 string, val uint64) {

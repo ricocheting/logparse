@@ -53,7 +53,8 @@ func (st *Store) ListBaseNumber(bucket []byte) ([]Stat, error) {
 // ListBaseStats
 func (st *Store) ListBaseStats(bucket []byte) (internal.StatCollection, error) {
 	var data = internal.StatCollection{
-		Collect: map[string]internal.Stats{},
+		Collect:    map[string]internal.Stats{},
+		GrandTotal: 0,
 	}
 
 	return data, st.db.View(func(tx *bolt.Tx) error {
@@ -65,6 +66,7 @@ func (st *Store) ListBaseStats(bucket []byte) (internal.StatCollection, error) {
 
 			for key, value := range worker {
 				data.Add(string(k), key, value)
+				data.GrandTotal += value
 			}
 
 			return nil
