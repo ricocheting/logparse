@@ -2,6 +2,7 @@ package main
 
 import (
 	"html/template"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -33,6 +34,13 @@ func main() {
 
 	var t = template.Must(template.ParseFiles("templates/main.html"))
 
-	t.Execute(os.Stdout, page)
+	// Write the file
+	file, err := os.Create("logs/index.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	t.Execute(file, page)
 
 }

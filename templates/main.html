@@ -1,40 +1,102 @@
-<div id="contents">
-	{{range .Hits}}
-	<div>
-		<div class="info">{{.Name}}</div>
-		<div class="img">{{.Value}}</div>
-	</div>
-	{{end}}
-</div>
+<!DOCTYPE html>
+<html lang="en">
 
-<div id="contents">
-	{{range .IPS}}
-	<div>
-		<div class="info">{{.Name}}</div>
-		<div class="img">{{.Value}}</div>
-	</div>
-	{{end}}
-</div>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<div id="contents">
-	{{range $k, $v := .Extensions.Collect}} {{$k}}
-	<div>
-		{{range $name, $value := $v}}
-		<div class="info">{{$name}}</div>
-		<div class="img">{{$value}}</div>
-		{{end}}
-	</div>
-	{{end}}
-</div>
+	<title>nginx Stats</title>
+
+	<link href="bootstrap.min.css" rel="stylesheet">
+
+	<style>
+		/* div table */
+		
+		.qrow {
+			display: table-row;
+		}
+		
+		.qcolumn {
+			padding: .3em .5em;
+			display: table-cell;
+		}
+		
+		h2 {
+			border-bottom: 1px solid #eee;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div class="container">
+
+		<div class="page-header">
+			<h1>nginx Stats</small>
+			</h1>
+		</div>
+
+		<div id="contents">
+			<h2>Total Hits</h2>
+			{{range .Hits}}
+			<div class="qrow">
+				<div class="qcolumn">{{.Name}}</div>
+				<div class="qcolumn">{{.Value}}</div>
+			</div>
+			{{end}}
+		</div>
+
+		<div id="contents">
+			<h2>Unique IPs</h2>
+			{{range .IPS}}
+			<div class="qrow">
+				<div class="qcolumn">{{.Name}}</div>
+				<div class="qcolumn">{{.Value}}</div>
+			</div>
+			{{end}}
+		</div>
+
+		<div id="contents">
+			<h2>File Extensions</h2>
+			<table class="table table-bordered table-condensed">
+				<tbody>
+					{{range $k, $v := .Extensions.Collect}}
+					<tr>
+						<th>{{$k}}</th>
+					</tr>
+					<tr>
+						{{range $name, $value := $v}}
+						<td>{{$name}}</td>
+						<td>{{$value}}</td>
+						{{end}}
+					</tr>
+					{{end}}
+				</tbody>
+			</table>
+		</div>
 
 
-<div id="contents">
-	{{range $k, $v := .StatusCodes.Collect}} {{$k}}
-	<div>
-		{{range $name, $value := $v}}
-		<div class="info">{{$name}}</div>
-		<div class="img">{{$value}}</div>
-		{{end}}
+		<div id="contents">
+			<h2>Status Codes</h2>
+			<table class="table table-bordered table-condensed">
+				<tbody>
+					{{range $k, $v := .StatusCodes.Collect}}
+					<tr>
+						<th>{{$k}}</th>
+					</tr>
+					<tr>
+
+						{{range $name, $value := $v}}
+						<td>{{$name}}</td>
+						<td>{{$value}}</td>
+						{{end}}
+					</tr>
+					{{end}}
+				</tbody>
+			</table>
+		</div>
 	</div>
-	{{end}}
-</div>
+
+</body>
+
+</html>
