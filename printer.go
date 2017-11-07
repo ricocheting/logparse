@@ -21,7 +21,7 @@ type Page struct {
 
 func main() {
 	templateFolder := flag.String("templates", "templates/", "Template folder. Include trailing slash")
-	outFolder := flag.String("out", "logs/", "Output folder. Include trailing slash")
+	outFolder := flag.String("out", "http/", "Output folder. Include trailing slash")
 	flag.Parse()
 
 	store := storage.NewStore(filepath.Join("data", "db"))

@@ -32,26 +32,22 @@
 	<div class="container">
 
 		<div class="page-header">
-			<h1>nginx Stats</small>
+			<h1>sitename.com</small>
 			</h1>
 		</div>
 
 		<div id="contents">
-			<h2>Total Hits</h2>
-			{{range .Hits}}
+			<h2>Stats</h2>
 			<div class="qrow">
-				<div class="qcolumn">{{.Name | formatDate}}</div>
-				<div class="qcolumn" title="{{.Value | formatCommas}}">{{.Value | formatShortHand}}</div>
+				<div class="qcolumn"></div>
+				<div class="qcolumn"><b>Hits</b></div>
+				<div class="qcolumn"><b>Visitors</b></div>
 			</div>
-			{{end}}
-		</div>
-
-		<div id="contents">
-			<h2>Unique IPs</h2>
-			{{range .IPS}}
+			{{range $i, $v := .Hits}}
 			<div class="qrow">
-				<div class="qcolumn">{{.Name | formatDate}}</div>
-				<div class="qcolumn" title="{{.Value | formatCommas}}">{{.Value | formatShortHand}}</div>
+				<div class="qcolumn">{{$v.Name | formatDate}}</div>
+				<div class="qcolumn" title="{{$v.Value | formatCommas}}">{{$v.Value | formatShortHand}}</div>
+				<div class="qcolumn" title="{{(index $.IPS $i).Value | formatCommas}}">{{(index $.IPS $i).Value | formatShortHand}}</div>
 			</div>
 			{{end}}
 		</div>
