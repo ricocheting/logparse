@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"html/template"
 	"log"
@@ -19,6 +20,9 @@ type Page struct {
 }
 
 func main() {
+	templateFolder := flag.String("templates", "templates/", "Template folder. Include trailing slash")
+	outFolder := flag.String("out", "logs/", "Output folder. Include trailing slash")
+	flag.Parse()
 
 	store := storage.NewStore(filepath.Join("data", "db"))
 	if err := store.Open(); err != nil {
@@ -38,10 +42,10 @@ func main() {
 		"formatCommas":    internal.FormatCommas,
 		"formatShortHand": internal.FormatShortHand,
 	}
-	t := template.Must(template.New("index.html").Funcs(fmap).ParseFiles("templates/index.html"))
+	t := template.Must(template.New("index.html").Funcs(fmap).ParseFiles(*templateFolder + "index.html"))
 
 	// Write the file
-	file, err := os.Create("logs/index.html")
+	file, err := os.Create(*outFolder + "index.html")
 	if err != nil {
 		log.Fatal(err)
 	}
