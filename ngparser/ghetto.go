@@ -5,6 +5,7 @@ import (
 	"io"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"sort"
 	"strings"
 	"sync"
@@ -77,8 +78,8 @@ func (p *Parser) Parse(r io.Reader, fn func(r *Record)) {
 	// defer p.mux.Unlock()
 	var (
 		sc  = bufio.NewScanner(r)
-		in  = make(chan string, 1) //runtime.NumCPU()
-		out = make(chan *Record, 1)
+		in  = make(chan string, runtime.NumCPU())
+		out = make(chan *Record, runtime.NumCPU())
 		wg  sync.WaitGroup
 	)
 
