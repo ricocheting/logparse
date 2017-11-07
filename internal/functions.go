@@ -45,7 +45,7 @@ func Btoi(b []byte) uint64 {
 // FormatShortDate turns "YYYYMMDD" into "Jan 01"
 func FormatShortDate(ts string) string {
 	out, _ := time.Parse("20060102", ts)
-	return out.Format("Jan 01")
+	return out.Format("Jan 02")
 }
 
 // FormatCommas turns 1234567890 into 1,234,567,890
