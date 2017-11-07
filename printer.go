@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"os"
@@ -32,7 +33,12 @@ func main() {
 
 	//fmt.Printf("Hits: %+v\n", page.Extensions)
 
-	var t = template.Must(template.ParseFiles("templates/main.html"))
+	fmap := template.FuncMap{
+		"formatDate":      internal.FormatShortDate,
+		"formatCommas":    internal.FormatCommas,
+		"formatShortHand": internal.FormatShortHand,
+	}
+	t := template.Must(template.New("index.html").Funcs(fmap).ParseFiles("templates/index.html"))
 
 	// Write the file
 	file, err := os.Create("logs/index.html")
@@ -41,6 +47,8 @@ func main() {
 	}
 	defer file.Close()
 
-	t.Execute(file, page)
+	if err := t.ExecuteTemplate(file, "index.html", page); err != nil {
+		fmt.Println(err)
+	}
 
 }

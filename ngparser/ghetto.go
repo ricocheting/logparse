@@ -27,7 +27,7 @@ const ( // StatTypes
 	maxType
 )
 const (
-	timeFmt = `2/Jan/2006:15:04:05 -0700`
+	timeFmt = `02/Jan/2006:15:04:05 -0700`
 )
 
 var re = regexp.MustCompile(`(.+?)\s[^[]+\[([^\]]+)\]\s"(\w+) (.+?)\sHTTP/(\d\.\d)"\s+(\d+)\s+(\d+)\s+"([^"]+)"\s+"([^"]+)"`)

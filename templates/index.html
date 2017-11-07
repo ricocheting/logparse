@@ -40,8 +40,8 @@
 			<h2>Total Hits</h2>
 			{{range .Hits}}
 			<div class="qrow">
-				<div class="qcolumn">{{.Name}}</div>
-				<div class="qcolumn">{{.Value}}</div>
+				<div class="qcolumn">{{.Name | formatDate}}</div>
+				<div class="qcolumn" title="{{.Value | formatCommas}}">{{.Value | formatShortHand}}</div>
 			</div>
 			{{end}}
 		</div>
@@ -50,8 +50,8 @@
 			<h2>Unique IPs</h2>
 			{{range .IPS}}
 			<div class="qrow">
-				<div class="qcolumn">{{.Name}}</div>
-				<div class="qcolumn">{{.Value}}</div>
+				<div class="qcolumn">{{.Name | formatDate}}</div>
+				<div class="qcolumn" title="{{.Value | formatCommas}}">{{.Value | formatShortHand}}</div>
 			</div>
 			{{end}}
 		</div>
@@ -62,12 +62,12 @@
 				<tbody>
 					{{range $k, $v := .Extensions.Collect}}
 					<tr>
-						<th>{{$k}}</th>
+						<th>{{$k | formatDate}}</th>
 					</tr>
 					<tr>
 						{{range $name, $value := $v}}
 						<td>{{$name}}</td>
-						<td>{{$value}}</td>
+						<td>{{$value | formatCommas}}</td>
 						{{end}}
 					</tr>
 					{{end}}
@@ -82,13 +82,13 @@
 				<tbody>
 					{{range $k, $v := .StatusCodes.Collect}}
 					<tr>
-						<th>{{$k}}</th>
+						<th>{{$k | formatDate}}</th>
 					</tr>
 					<tr>
 
 						{{range $name, $value := $v}}
 						<td>{{$name}}</td>
-						<td>{{$value}}</td>
+						<td>{{$value | formatCommas}}</td>
 						{{end}}
 					</tr>
 					{{end}}
