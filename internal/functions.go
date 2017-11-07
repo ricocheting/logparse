@@ -18,6 +18,17 @@ func (s Stats) ToSlice(min uint64) []Stat {
 	return out[:len(out):len(out)] // trim the slice to release the unused memory
 }
 
+func IsNewerDay(startDate, compDate time.Time) bool {
+	/*y1, m1, d1 := date1.Date()
+	y2, m2, d2 := date2.Date()
+	return y1 == y2 && m1 == m2 && d1 == d2*/
+
+	d1 := startDate.Truncate(24 * time.Hour)
+	d2 := compDate.Truncate(24 * time.Hour)
+
+	return !(d1.Equal(d2) || d2.Before(d1))
+}
+
 // Itob converts an uint64 to byte array
 func Itob(i uint64) []byte {
 	b := make([]byte, 8)

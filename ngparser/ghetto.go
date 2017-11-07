@@ -111,7 +111,7 @@ func (p *Parser) Parse(r io.Reader, fn func(r *Record)) {
 
 		if startDate.IsZero() {
 			startDate = r.TS
-		} else if isNewerDay(startDate, r.TS) {
+		} else if internal.IsNewerDay(startDate, r.TS) {
 			startDate = r.TS
 			// insert p.data into buckets
 			p.saveData([]byte(startDate.Format("20060102")))
@@ -215,17 +215,6 @@ func (p *Parser) parseLine(wg *sync.WaitGroup, in chan string, out chan *Record)
 		out <- r
 	}
 	wg.Done()
-}
-
-func isNewerDay(startDate, compDate time.Time) bool {
-	/*y1, m1, d1 := date1.Date()
-	y2, m2, d2 := date2.Date()
-	return y1 == y2 && m1 == m2 && d1 == d2*/
-
-	d1 := startDate.Truncate(24 * time.Hour)
-	d2 := compDate.Truncate(24 * time.Hour)
-
-	return !(d1.Equal(d2) || d2.Before(d1))
 }
 
 func (p *Parser) saveData(dateKey []byte) {
