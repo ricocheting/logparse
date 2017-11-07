@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/ricocheting/logparse/internal"
 	"github.com/ricocheting/logparse/storage"
@@ -15,8 +16,10 @@ import (
 type Page struct {
 	Hits        []internal.Stat
 	IPS         []internal.Stat
+	Pages       []internal.Stat
 	Extensions  internal.StatCollection
 	StatusCodes internal.StatCollection
+	DateCreated string
 }
 
 func main() {
@@ -32,8 +35,10 @@ func main() {
 
 	page.Hits, _ = store.ListBaseNumber(internal.HitsBucket)
 	page.IPS, _ = store.ListBaseNumber(internal.IPSBucket)
+	page.Pages, _ = store.ListPages(internal.ExtensionsBucket)
 	page.Extensions, _ = store.ListBaseStats(internal.ExtensionsBucket)
 	page.StatusCodes, _ = store.ListBaseStats(internal.StatusCodesBucket)
+	page.DateCreated = time.Now().Format("Mon Jan _2 15:04:05 2006")
 
 	//fmt.Printf("Hits: %+v\n", page.Extensions)
 

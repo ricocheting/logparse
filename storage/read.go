@@ -75,3 +75,30 @@ func (st *Store) ListBaseStats(bucket []byte) (internal.StatCollection, error) {
 		return nil
 	})
 }
+
+// ListPages
+func (st *Store) ListPages(bucket []byte) ([]Stat, error) {
+	var stats = []Stat{}
+
+	return stats, st.db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket(bucket)
+
+		b.ForEach(func(k []byte, v []byte) error {
+			worker := Stats{}
+			json.Unmarshal(v, &worker)
+			stat := Stat{Name: string(k[:]), Value: 0}
+
+			for key, value := range worker {
+				if key == "" || key == ".shtml" || key == ".php" || key == ".htm" || key == ".html" {
+					stat.Value += value
+				}
+			}
+
+			stats = append(stats, stat)
+
+			return nil
+		})
+
+		return nil
+	})
+}

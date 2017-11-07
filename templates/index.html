@@ -10,19 +10,79 @@
 	<link href="bootstrap.min.css" rel="stylesheet">
 
 	<style>
+		footer {
+			background-color: #f5f5f5;
+			text-align: center;
+			vertical-align: middle;
+		}
+		
+		footer .text-muted {
+			margin: 10px 0;
+		}
 		/* div table */
 		
 		.qrow {
 			display: table-row;
 		}
 		
+		.qrow:nth-of-type(even) {
+			background-color: #f9f9f9;
+		}
+		
 		.qcolumn {
 			padding: .3em .5em;
 			display: table-cell;
+			min-width: 80px;
+			text-align: right;
+		}
+		
+		.qcolumn:first-child {
+			font-weight: bold;
+			text-align: left;
+		}
+		
+		.qcolumn.hits {
+			background-color: #008040;
+			color: white;
+			font-weight: bold;
+		}
+		
+		.qcolumn.pages {
+			background-color: #0080FF;
+			color: white;
+			font-weight: bold;
+		}
+		
+		.qcolumn.visitors {
+			background-color: #FFFF00;
+			color: black;
+			font-weight: bold;
 		}
 		
 		h2 {
 			border-bottom: 1px solid #eee;
+		}
+		
+		.fw {
+			float: left;
+			margin-right: 10px;
+		}
+		
+		.fcontain:after {
+			content: " ";
+			/* Older browser do not support empty content */
+			visibility: hidden;
+			display: block;
+			height: 0;
+			clear: both;
+		}
+		
+		.fcontain td:first-child {
+			text-align: left;
+		}
+		
+		.fcontain td:last-child {
+			text-align: right;
 		}
 	</style>
 </head>
@@ -40,58 +100,69 @@
 			<h2>Stats</h2>
 			<div class="qrow">
 				<div class="qcolumn"></div>
-				<div class="qcolumn"><b>Hits</b></div>
-				<div class="qcolumn"><b>Visitors</b></div>
+				<div class="qcolumn hits">Hits</div>
+				<div class="qcolumn pages">Pages</div>
+				<div class="qcolumn visitors">Visitors</div>
 			</div>
 			{{range $i, $v := .Hits}}
 			<div class="qrow">
 				<div class="qcolumn">{{$v.Name | formatDate}}</div>
-				<div class="qcolumn" title="{{$v.Value | formatCommas}}">{{$v.Value | formatShortHand}}</div>
-				<div class="qcolumn" title="{{(index $.IPS $i).Value | formatCommas}}">{{(index $.IPS $i).Value | formatShortHand}}</div>
+				<div class="qcolumn" title="{{$v.Value | formatCommas}}">{{$v.Value | formatCommas}}</div>
+				<div class="qcolumn" title="{{(index $.Pages $i).Value | formatCommas}}">{{(index $.Pages $i).Value | formatCommas}}</div>
+				<div class="qcolumn" title="{{(index $.IPS $i).Value | formatCommas}}">{{(index $.IPS $i).Value | formatCommas}}</div>
 			</div>
 			{{end}}
 		</div>
 
 		<div id="contents">
 			<h2>File Extensions</h2>
-			<table class="table table-bordered table-condensed">
-				<tbody>
-					{{range $k, $v := .Extensions.Collect}}
-					<tr>
-						<th>{{$k | formatDate}}</th>
-					</tr>
-					<tr>
-						{{range $name, $value := $v}}
-						<td>{{$name}}</td>
-						<td>{{$value | formatCommas}}</td>
-						{{end}}
-					</tr>
-					{{end}}
-				</tbody>
-			</table>
+			<div class="fcontain">
+				{{range $k, $v := .Extensions.Collect}}
+				<div class="fw">
+					<h5>{{$k | formatDate}}</h5>
+					<table class="table table-bordered table-condensed">
+						<tbody>
+							{{range $name, $value := $v}}
+							<tr>
+								<td>{{$name}}</td>
+								<td>{{$value | formatCommas}}</td>
+							</tr>
+							{{end}}
+						</tbody>
+					</table>
+				</div>
+				{{end}}
+			</div>
 		</div>
 
 
 		<div id="contents">
-			<h2>Status Codes ({{.StatusCodes.GrandTotal}})</h2>
-			<table class="table table-bordered table-condensed">
-				<tbody>
-					{{range $k, $v := .StatusCodes.Collect}}
-					<tr>
-						<th>{{$k | formatDate}}</th>
-					</tr>
-					<tr>
-
-						{{range $name, $value := $v}}
-						<td>{{$name}}</td>
-						<td>{{$value | formatCommas}}</td>
-						{{end}}
-					</tr>
-					{{end}}
-				</tbody>
-			</table>
+			<h2>Status Codes</h2>
+			<div class="fcontain">
+				{{range $k, $v := .StatusCodes.Collect}}
+				<div class="fw">
+					<h5>{{$k | formatDate}}</h5>
+					<table class="table table-bordered table-condensed">
+						<tbody>
+							{{range $name, $value := $v}}
+							<tr>
+								<td>{{$name}}</td>
+								<td>{{$value | formatCommas}}</td>
+							</tr>
+							{{end}}
+						</tbody>
+					</table>
+				</div>
+				{{end}}
+			</div>
 		</div>
+
 	</div>
+	<footer>
+		<div class="container">
+			<p class="text-muted">Date Last Updated: {{.DateCreated}}</p>
+		</div>
+	</footer>
 
 </body>
 
