@@ -146,7 +146,7 @@
 						<tbody>
 							{{range $name, $value := $v}}
 							<tr>
-								<td>{{$name}}</td>
+								<td title="{{$name | formatStatusCode}}">{{$name}}</td>
 								<td>{{$value | formatCommas}}</td>
 							</tr>
 							{{end}}

@@ -139,7 +139,7 @@ func (p *Parser) Parse(r io.Reader, fn func(r *Record)) {
 		p.data[StatusCodes][r.Status]++
 
 		// if the page exists, save its info
-		if r.Status != "404" {
+		if r.Status == "200" || r.Status == "304" {
 			p.data[Pages][cleanPath]++
 			//p.data[Hits][r.Filename]++
 			//p.data[UserAgents][r.UserAgent]++ // probably should parse the agent and store something like Chrome-XX, IE11, Edge, etc.

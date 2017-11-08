@@ -91,3 +91,12 @@ func FormatShortHand(in uint64) string {
 
 	return fmt.Sprintf("%d", in)
 }
+
+// FormatStatusCodeName turns "404" into "Not Found"
+func FormatStatusCodeName(code string) string {
+	if val, ok := StatusCodeNames[code]; ok {
+		return val
+	} else {
+		return ""
+	}
+}

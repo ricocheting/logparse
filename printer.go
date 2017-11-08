@@ -43,9 +43,10 @@ func main() {
 	//fmt.Printf("Hits: %+v\n", page.Extensions)
 
 	fmap := template.FuncMap{
-		"formatDate":      internal.FormatShortDate,
-		"formatCommas":    internal.FormatCommas,
-		"formatShortHand": internal.FormatShortHand,
+		"formatDate":       internal.FormatShortDate,
+		"formatCommas":     internal.FormatCommas,
+		"formatShortHand":  internal.FormatShortHand,
+		"formatStatusCode": internal.FormatStatusCodeName,
 	}
 	t := template.Must(template.New("index.html").Funcs(fmap).ParseFiles(*templateFolder + "index.html"))
 
