@@ -84,6 +84,10 @@
 		.fcontain td:last-child {
 			text-align: right;
 		}
+		
+		.status-green {
+			background-color: #c1e9b2
+		}
 	</style>
 </head>
 
@@ -92,8 +96,7 @@
 	<div class="container">
 
 		<div class="page-header">
-			<h1>sitename.com</small>
-			</h1>
+			<h1>sitename.com</h1>
 		</div>
 
 		<div id="contents">
@@ -124,7 +127,7 @@
 						<tbody>
 							{{range $name, $value := $v}}
 							<tr>
-								<td>{{$name}}</td>
+								<td>{{if eq $name ""}}/{{else}}{{$name}}{{end}}</td>
 								<td>{{$value | formatCommas}}</td>
 							</tr>
 							{{end}}
@@ -146,7 +149,7 @@
 						<tbody>
 							{{range $name, $value := $v}}
 							<tr>
-								<td title="{{$name | formatStatusCode}}">{{$name}}</td>
+								<td title="{{$name | formatStatusCode}}" {{if eq $name "200" "304"}}class="status-green" {{end}}>{{$name}}</td>
 								<td>{{$value | formatCommas}}</td>
 							</tr>
 							{{end}}
