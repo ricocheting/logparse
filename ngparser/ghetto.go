@@ -33,7 +33,6 @@ const (
 )
 
 var re = regexp.MustCompile(`(.+?)\s[^[]+\[([^\]]+)\]\s"(\w+) (.+?)\sHTTP/(\d\.\d)"\s+(\d+)\s+(\d+)\s+"([^"]+)"\s+"([^"]+)"`)
-var domainRe = regexp.MustCompile(".")
 
 //var store *storage.Store
 
@@ -52,8 +51,9 @@ type Stat = internal.Stat
 type Stats = internal.Stats
 
 type Parser struct {
-	mux   sync.RWMutex
-	store *storage.Store
+	mux      sync.RWMutex
+	store    *storage.Store
+	domainRe *regexp.Regexp
 
 	data  [maxType]Stats
 	count uint64
@@ -66,18 +66,21 @@ func New(domain string) *Parser {
 		panic("Error opening storage (db possibly still open by another process): " + err.Error())
 	}
 
-	if domain != "" {
-		domainRe = regexp.MustCompile("^https?://(www.)?" + domain)
-	}
-
 	var data [maxType]Stats
 	for i := range data {
 		data[i] = Stats{}
 	}
-	return &Parser{
+
+	p := &Parser{
 		store: store,
 		data:  data,
 	}
+
+	if domain != "" {
+		p.domainRe = regexp.MustCompile("^https?://(www.)?" + domain)
+	}
+
+	return p
 }
 
 func (p *Parser) Parse(r io.Reader, fn func(r *Record)) {
@@ -153,12 +156,9 @@ func (p *Parser) Parse(r io.Reader, fn func(r *Record)) {
 			//p.data[Hits][r.Filename]++
 			//p.data[UserAgents][r.UserAgent]++ // probably should parse the agent and store something like Chrome-XX, IE11, Edge, etc.
 			p.data[Extensions][strings.ToLower(filepath.Ext(cleanPath))]++
-		} else if r.Status == "404" && r.Referer != "-" {
-			cp := domainRe.Copy()
+		} else if r.Status == "404" && r.Referer != "-" && p.domainRe != nil && p.domainRe.MatchString(r.Referer) {
 			// if the status is 404 and a domain was passed in and the referer matches the domain
-			if cp.MatchString(r.Referer) {
-				fmt.Printf("404: %s , %s\n", cleanPath, r.Referer)
-			}
+			fmt.Printf("404: %s , %s\n", cleanPath, r.Referer)
 
 		}
 
