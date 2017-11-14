@@ -33,6 +33,7 @@ const (
 )
 
 var re = regexp.MustCompile(`(.+?)\s[^[]+\[([^\]]+)\]\s"(\w+) (.+?)\sHTTP/(\d\.\d)"\s+(\d+)\s+(\d+)\s+"([^"]+)"\s+"([^"]+)"`)
+var domainRe = regexp.MustCompile(".")
 
 //var store *storage.Store
 
@@ -52,16 +53,21 @@ type Stats = internal.Stats
 
 type Parser struct {
 	mux   sync.RWMutex
+	store *storage.Store
+
 	data  [maxType]Stats
 	count uint64
 	ipv6  uint64
-	store *storage.Store
 }
 
-func New() *Parser {
+func New(domain string) *Parser {
 	store := storage.NewStore(filepath.Join("data", "db"))
 	if err := store.Open(); err != nil {
 		panic("Error opening storage (db possibly still open by another process): " + err.Error())
+	}
+
+	if domain != "" {
+		domainRe = regexp.MustCompile("^https?://(www.)?" + domain)
 	}
 
 	var data [maxType]Stats
@@ -147,6 +153,13 @@ func (p *Parser) Parse(r io.Reader, fn func(r *Record)) {
 			//p.data[Hits][r.Filename]++
 			//p.data[UserAgents][r.UserAgent]++ // probably should parse the agent and store something like Chrome-XX, IE11, Edge, etc.
 			p.data[Extensions][strings.ToLower(filepath.Ext(cleanPath))]++
+		} else if r.Status == "404" && r.Referer != "-" {
+			cp := domainRe.Copy()
+			// if the status is 404 and a domain was passed in and the referer matches the domain
+			if cp.MatchString(r.Referer) {
+				fmt.Printf("404: %s , %s\n", cleanPath, r.Referer)
+			}
+
 		}
 
 		p.mux.Unlock()
@@ -196,7 +209,7 @@ func (p *Parser) IPsCount() (v4, v6 uint64) {
 
 // convert the log line into a record
 func (p *Parser) parseLine(wg *sync.WaitGroup, in chan string, out chan *Record) {
-	cp := re.Copy()
+	cp := re.Copy() //"When using a Regexp in multiple goroutines, giving each goroutine its own copy helps to avoid lock contention"
 	for l := range in {
 		var line []string
 		if parsed := cp.FindAllStringSubmatch(l, -1); len(parsed) == 1 {
@@ -210,8 +223,8 @@ func (p *Parser) parseLine(wg *sync.WaitGroup, in chan string, out chan *Record)
 			Method:    line[3],
 			Filename:  line[4],
 			Status:    line[6],
-			Referer:   line[7],
-			UserAgent: line[8],
+			Referer:   line[8],
+			UserAgent: line[9],
 		}
 
 		r.TS, _ = time.Parse(timeFmt, line[2])

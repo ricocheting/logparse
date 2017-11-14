@@ -12,6 +12,7 @@ import (
 
 func main() {
 	logfile := flag.String("log", "", "Log file to process")
+	domain := flag.String("domain", "", "Domain for log file. Used for ignoring records. Use format \"example.com\"")
 	flag.Parse()
 
 	f, err := os.Open(*logfile)
@@ -20,13 +21,13 @@ func main() {
 	}
 	defer f.Close()
 
-	p := ngparser.New()
+	p := ngparser.New(*domain)
 	p.Parse(f, nil)
 
 	/*p.Parse(f, func(r *ngparser.Record) {
 		// if you wanna do some processing to the record
 	})*/
-	fmt.Println(time.Now().Format(time.RFC850))
+	fmt.Println(*domain + " " + time.Now().Format(time.RFC850))
 	fmt.Printf("Hits: %+v\n", p.Count())
 	//fmt.Printf("Top Files: %+v\n", p.Stats(ngparser.Pages, 1000))
 	fmt.Printf("Unique Files: %+v\n", p.StatsCount(ngparser.Pages))

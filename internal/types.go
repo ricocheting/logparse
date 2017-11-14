@@ -45,6 +45,7 @@ var (
 	ExtensionsBucket  = []byte("extensions")
 	StatusCodesBucket = []byte("statuscodes")
 	IPSBucket         = []byte("ips")
+	NotFoundBucket    = []byte("notfound")
 	//errBucketNotFound = errors.New("Bucket not found")
 	//errActIDExists    = errors.New("ActID already associated with Task")
 )
