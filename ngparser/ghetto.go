@@ -2,6 +2,7 @@ package ngparser
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"path/filepath"
 	"regexp"
@@ -112,9 +113,11 @@ func (p *Parser) Parse(r io.Reader, fn func(r *Record)) {
 		if startDate.IsZero() {
 			startDate = r.TS
 		} else if internal.IsNewerDay(startDate, r.TS) {
-			startDate = r.TS
+			fmt.Printf("Date rollover. %+v hits saved to %s and new date started\n", p.Count(), startDate)
+
 			// insert p.data into buckets
 			p.saveData([]byte(startDate.Format("20060102")))
+			startDate = r.TS
 
 			// clear p.data
 			var data [maxType]Stats

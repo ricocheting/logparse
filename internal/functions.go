@@ -18,13 +18,14 @@ func (s Stats) ToSlice(min uint64) []Stat {
 	return out[:len(out):len(out)] // trim the slice to release the unused memory
 }
 
+//IsNewerDay checks (while ignoring timezone) has the date rolled over
 func IsNewerDay(startDate, compDate time.Time) bool {
 	/*y1, m1, d1 := date1.Date()
 	y2, m2, d2 := date2.Date()
 	return y1 == y2 && m1 == m2 && d1 == d2*/
 
-	d1 := startDate.Truncate(24 * time.Hour)
-	d2 := compDate.Truncate(24 * time.Hour)
+	d1 := time.Date(startDate.Year(), startDate.Month(), startDate.Day(), 0, 0, 0, 0, time.UTC)
+	d2 := time.Date(compDate.Year(), compDate.Month(), compDate.Day(), 0, 0, 0, 0, time.UTC)
 
 	return !(d1.Equal(d2) || d2.Before(d1))
 }
