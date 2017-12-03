@@ -15,6 +15,14 @@ func main() {
 	domain := flag.String("domain", "", "Domain for log file. Used for ignoring records. Use format \"example.com\"")
 	flag.Parse()
 
+	t1 := time.Now()
+
+	// show what log we're running
+	if *domain != "" {
+		fmt.Print(*domain + " ") //prepend to date line below
+	}
+	fmt.Println(t1.Format("2006-01-02 15:04:05"))
+
 	f, err := os.Open(*logfile)
 	if err != nil {
 		log.Fatal(err)
@@ -27,7 +35,6 @@ func main() {
 	/*p.Parse(f, func(r *ngparser.Record) {
 		// if you wanna do some processing to the record
 	})*/
-	fmt.Println(*domain + " " + time.Now().Format(time.RFC850))
 	fmt.Printf("Hits: %+v\n", p.Count())
 	//fmt.Printf("Top Files: %+v\n", p.Stats(ngparser.Pages, 1000))
 	fmt.Printf("Unique Files: %+v\n", p.StatsCount(ngparser.Pages))
@@ -38,4 +45,7 @@ func main() {
 	//fmt.Printf("All StatusCodes: %+v\n", p.Stats(ngparser.StatusCodes, 0))
 
 	//fmt.Println(p.IPsCount())
+
+	t2 := time.Now()
+	fmt.Printf("Time Run: %d seconds\n\n", int(t2.Sub(t1).Seconds()))
 }
