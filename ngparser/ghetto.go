@@ -118,6 +118,9 @@ func (p *Parser) Parse(r io.Reader, fn func(r *Record)) {
 		if idx := strings.IndexByte(cleanPath, '?'); idx != -1 {
 			cleanPath = cleanPath[:idx]
 		}
+		if idx := strings.IndexByte(cleanPath, '#'); idx != -1 { // this shouldn't ever occur, but it does
+			cleanPath = cleanPath[:idx]
+		}
 
 		if startDate.IsZero() {
 			startDate = r.TS
