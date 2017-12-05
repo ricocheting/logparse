@@ -3,7 +3,6 @@ package storage
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 
 	"github.com/boltdb/bolt"
 	"github.com/ricocheting/logparse/internal"
@@ -43,13 +42,13 @@ func (st *Store) ListBaseNumber(bucket []byte) (internal.StatTotal, error) {
 			//data.Get(k[0:4]).Get(k[4:6]).AddDay(k[6:8], v)
 			data.AddTotal(k[0:4], k[4:6], k[6:8], v)
 
-			fmt.Printf("%s, %s, %s: ", k[0:4], k[4:6], k[6:8]) //2017, 12, 03
-			fmt.Printf("\tD:%d", data.Get(k[0:4]).Get(k[4:6]).Get(k[6:8]))
-			fmt.Printf("\tGT:%d", data.Total)
-			fmt.Printf("\tY:%d", data.Get(k[0:4]).Total)
-			fmt.Printf("\tM:%d", data.Get(k[0:4]).Get(k[4:6]).Total)
+			/*			fmt.Printf("%s, %s, %s: ", k[0:4], k[4:6], k[6:8]) //2017, 12, 03
+						fmt.Printf("\tD:%d", data.Get(k[0:4]).Get(k[4:6]).Get(k[6:8]))
+						fmt.Printf("\tGT:%d", data.Total)
+						fmt.Printf("\tY:%d", data.Get(k[0:4]).Total)
+						fmt.Printf("\tM:%d", data.Get(k[0:4]).Get(k[4:6]).Total)
 
-			fmt.Print("\n")
+						fmt.Print("\n")*/
 
 			return nil
 		})

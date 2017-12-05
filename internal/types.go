@@ -13,16 +13,16 @@ type StatCollection struct {
 }
 
 type StatTotal struct { //StatTotal[YY].Months[MM].Days[DD][".jpg"]
-	Total uint64              // total for all in database
-	Years map[uint8]*StatYear //.Years[YYYY]=
+	Total uint64               // total for all in database
+	Years map[uint16]*StatYear //.Years[YYYY]=
 }
 
 func (st *StatTotal) Get(y []byte) (sm *StatYear) {
 	if st.Years == nil {
-		st.Years = map[uint8]*StatYear{}
+		st.Years = map[uint16]*StatYear{}
 	}
 
-	n := Btoi8(y) // this will break badly if it's not yyyy
+	n := Btoi16(y)
 
 	if sm = st.Years[n]; sm == nil {
 		sm = &StatYear{}

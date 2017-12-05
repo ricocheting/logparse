@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 	"time"
 
 	"github.com/ricocheting/logparse/internal"
@@ -14,7 +15,7 @@ import (
 )
 
 type Page struct {
-	Hits        []internal.Stat
+	Hits        internal.StatMonth
 	IPS         []internal.Stat
 	Pages       []internal.Stat
 	Extensions  internal.StatCollection
@@ -33,7 +34,7 @@ func main() {
 	}
 	page := Page{}
 
-	_, _ = store.ListBaseNumber(internal.HitsBucket)
+	hits, _ := store.ListBaseNumber(internal.HitsBucket)
 	//	_, _ = store.ListBaseNumber(internal.IPSBucket)
 	page.Pages, _ = store.ListPages(internal.ExtensionsBucket)
 	page.Extensions, _ = store.ListBaseStats(internal.ExtensionsBucket)
@@ -48,16 +49,43 @@ func main() {
 		"formatShortHand":  internal.FormatShortHand,
 		"formatStatusCode": internal.FormatStatusCodeName,
 	}
-	t := template.Must(template.New("index.html").Funcs(fmap).ParseFiles(*templateFolder + "index.html"))
 
-	// Write the file
+	tIndex := template.Must(template.New("index.html").Funcs(fmap).ParseFiles(*templateFolder + "index.html"))
+	tMonth := template.Must(template.New("month.html").Funcs(fmap).ParseFiles(*templateFolder + "month.html"))
+
+	// Write the month files
+	for year, yearData := range hits.Years {
+		// create year folders
+		pathname := *outFolder + strconv.Itoa(int(year)) + "/"
+		os.MkdirAll(pathname, os.ModePerm)
+
+		for month, monthData := range yearData.Months {
+			page.Hits = *monthData
+			//fmt.Printf("%s %s\n", strconv.Itoa(int(year)), strconv.Itoa(int(month)))
+			filename := strconv.Itoa(int(month)) + "-month.html"
+
+			// Write the file
+			file, err := os.Create(pathname + filename)
+			if err != nil {
+				log.Fatal(err)
+			}
+			defer file.Close()
+
+			if err := tMonth.ExecuteTemplate(file, "month.html", page); err != nil {
+				fmt.Println(err)
+			}
+		}
+	}
+	page = Page{}
+
+	// Write the main index year file
 	file, err := os.Create(*outFolder + "index.html")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer file.Close()
 
-	if err := t.ExecuteTemplate(file, "index.html", page); err != nil {
+	if err := tIndex.ExecuteTemplate(file, "index.html", page); err != nil {
 		fmt.Println(err)
 	}
 

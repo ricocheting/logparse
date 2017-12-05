@@ -46,6 +46,10 @@ func Btoi8(b []byte) uint8 {
 	n, _ := strconv.Atoi(string(b))
 	return uint8(n)
 }
+func Btoi16(b []byte) uint16 {
+	n, _ := strconv.Atoi(string(b))
+	return uint16(n)
+}
 func Atoi8(s string) uint8 {
 	n, _ := strconv.Atoi(s)
 	return uint8(n)

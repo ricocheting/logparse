@@ -7,7 +7,7 @@
 
 	<title>nginx Stats</title>
 
-	<link href="bootstrap.min.css" rel="stylesheet">
+	<link href="../bootstrap.min.css" rel="stylesheet">
 
 	<style>
 		footer {
@@ -90,6 +90,25 @@
 
 	<div class="container">
 
+		<div class="page-header">
+			<h1>sitename.com</h1>
+		</div>
+
+		<div id="contents">
+			<h2>Stats</h2>
+			<div class="qrow">
+				<div class="qcolumn"></div>
+				<div class="qcolumn hits">Hits</div>
+				<div class="qcolumn pages">Pages</div>
+				<div class="qcolumn visitors">Visitors</div>
+			</div>
+			{{range $i, $v := .Hits.Days}}
+			<div class="qrow">
+				<div class="qcolumn">{{$i}}</div>
+				<div class="qcolumn" title="">{{$v | formatCommas}}</div>
+			</div>
+			{{end}}
+		</div>
 
 	</div>
 	<footer>
