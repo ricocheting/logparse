@@ -3,6 +3,7 @@ package storage
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 
 	"github.com/boltdb/bolt"
 	"github.com/ricocheting/logparse/internal"
@@ -28,10 +29,11 @@ func (st *Store) FilterBaseNumber(bucket []byte, prefix []byte) ([]Stat, error) 
 }
 
 // ListBaseNumber
-func (st *Store) ListBaseNumber(bucket []byte) ([]Stat, error) {
-	var stats = []Stat{}
+func (st *Store) ListBaseNumber(bucket []byte) (internal.StatYear, error) {
+	var data = internal.StatYear{}
+	data.Years = make(map[string]internal.StatMonth)
 
-	return stats, st.db.View(func(tx *bolt.Tx) error {
+	return data, st.db.View(func(tx *bolt.Tx) error {
 		// Assume bucket exists and has keys
 		b := tx.Bucket(bucket)
 
@@ -39,9 +41,28 @@ func (st *Store) ListBaseNumber(bucket []byte) ([]Stat, error) {
 		b.ForEach(func(k []byte, v []byte) error {
 			//fmt.Printf("key=%s, value=%s\n", k, v)
 
-			stat := Stat{Name: string(k[:]), Value: internal.Btoi(v)}
+			year, err := data.Years[string(k[0:4])]
 
-			stats = append(stats, stat)
+			if !err {
+				year.Months = make(map[string]internal.StatDay)
+			}
+
+			month, err := data.Years[string(k[0:4])].Months[string(k[4:6])]
+
+			if !err {
+				month.Days = make(map[string]uint64)
+			}
+
+			//data.Years[string(k[0:4])].Months[string(k[4:6])].Days[string(k[6:8])] = internal.Btoi(v)
+
+			//stat := Stat{Name: string(k[:]), Value: internal.Btoi(v)}
+			year.GrandTotal += internal.Btoi(v)
+			// get year, month, day from k
+			fmt.Printf("%s, %s, %s: ", k[0:4], k[4:6], k[6:8]) //2017, 12, 03
+			fmt.Printf("%d\n", year.GrandTotal)
+
+			//data.Collect[string(k[0:4])].Collect[k[4:6]].Stats = append(data.Collect[string(k[0:4])].Collect[k[4:6]].Stats, stat)
+			//stats = append(stats, stat)
 
 			return nil
 		})

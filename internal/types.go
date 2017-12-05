@@ -12,6 +12,20 @@ type StatCollection struct {
 	Collect    map[string]Stats //[YYYYMMDD][".jpg"]=35
 }
 
+type StatYear struct { //StatYear[YY].Collect[MM].Collect[DD][".jpg"]
+	GrandTotal uint64
+	Years      map[string]StatMonth //[YY]=
+}
+type StatMonth struct {
+	GrandTotal uint64
+	Months     map[string]StatDay //[MM]=
+}
+type StatDay struct {
+	GrandTotal uint64
+	//Collect    map[string]Stats //[DD][".jpg"]=35
+	Days map[string]uint64 //[DD][".jpg"]=35
+}
+
 var StatusCodeNames = map[string]string{
 	"200": "OK",
 	"206": "Partial Content", //resume

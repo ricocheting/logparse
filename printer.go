@@ -33,8 +33,8 @@ func main() {
 	}
 	page := Page{}
 
-	page.Hits, _ = store.ListBaseNumber(internal.HitsBucket)
-	page.IPS, _ = store.ListBaseNumber(internal.IPSBucket)
+	_, _ = store.ListBaseNumber(internal.HitsBucket)
+	//	_, _ = store.ListBaseNumber(internal.IPSBucket)
 	page.Pages, _ = store.ListPages(internal.ExtensionsBucket)
 	page.Extensions, _ = store.ListBaseStats(internal.ExtensionsBucket)
 	page.StatusCodes, _ = store.ListBaseStats(internal.StatusCodesBucket)
