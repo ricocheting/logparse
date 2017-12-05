@@ -37,10 +37,18 @@ func Itob(i uint64) []byte {
 	return b
 }
 
-// Btoi converts a byte array to uint64
-func Btoi(b []byte) uint64 {
+// Btoi converts a byte array to uint64. that's not a string number, that's the binary def of the number. just make sure that it doesn't bite you in the ass
+func Btoi64(b []byte) uint64 {
 	i := binary.BigEndian.Uint64(b)
 	return i
+}
+func Btoi8(b []byte) uint8 {
+	n, _ := strconv.Atoi(string(b))
+	return uint8(n)
+}
+func Atoi8(s string) uint8 {
+	n, _ := strconv.Atoi(s)
+	return uint8(n)
 }
 
 // FormatShortDate turns "YYYYMMDD" into "Jan 01"

@@ -21,7 +21,7 @@ func (st *Store) SaveBaseNumber(bucket []byte, dateKey []byte, value uint64) err
 		newVal := internal.Itob(value) // INSERT value
 
 		if oldVal != nil {
-			newVal = internal.Itob(value + internal.Btoi(oldVal)) // UPDATE value
+			newVal = internal.Itob(value + internal.Btoi64(oldVal)) // UPDATE value
 		}
 
 		//fmt.Printf("Hits: %+v = %+v\n", string(dateKey), newVal)

@@ -12,20 +12,76 @@ type StatCollection struct {
 	Collect    map[string]Stats //[YYYYMMDD][".jpg"]=35
 }
 
-type StatYear struct { //StatYear[YY].Collect[MM].Collect[DD][".jpg"]
-	GrandTotal uint64
-	Years      map[string]StatMonth //[YY]=
-}
-type StatMonth struct {
-	GrandTotal uint64
-	Months     map[string]StatDay //[MM]=
-}
-type StatDay struct {
-	GrandTotal uint64
-	//Collect    map[string]Stats //[DD][".jpg"]=35
-	Days map[string]uint64 //[DD][".jpg"]=35
+type StatTotal struct { //StatTotal[YY].Months[MM].Days[DD][".jpg"]
+	Total uint64              // total for all in database
+	Years map[uint8]*StatYear //.Years[YYYY]=
 }
 
+func (st *StatTotal) Get(y []byte) (sm *StatYear) {
+	if st.Years == nil {
+		st.Years = map[uint8]*StatYear{}
+	}
+
+	n := Btoi8(y) // this will break badly if it's not yyyy
+
+	if sm = st.Years[n]; sm == nil {
+		sm = &StatYear{}
+		st.Years[n] = sm
+	}
+	return
+}
+func (st *StatTotal) AddTotal(y, m, d []byte, n []byte) *StatTotal {
+	i := Btoi64(n)
+
+	st.Total += i
+	sy := st.Get(y)
+	sy.Total += i
+	sm := sy.Get(m)
+	sm.Total += i
+	sm.AddDay(d, n)
+
+	return st
+}
+
+////////////////////////////////////
+type StatYear struct {
+	Total  uint64               //this year's total
+	Months map[uint8]*StatMonth //.Months[MM]=
+}
+
+func (sm *StatYear) Get(m []byte) (sd *StatMonth) {
+	if sm.Months == nil {
+		sm.Months = map[uint8]*StatMonth{}
+	}
+
+	n := Btoi8(m)
+
+	if sd = sm.Months[n]; sd == nil {
+		sd = &StatMonth{}
+		sm.Months[n] = sd
+	}
+	return
+}
+
+////////////////////////////////////
+type StatMonth struct {
+	Total uint64           //this months's total
+	Days  map[uint8]uint64 //.Days[DD]=35
+}
+
+func (sm *StatMonth) Get(d []byte) uint64 {
+	return sm.Days[Btoi8(d)] // doesn't check for nil because you can read a nil map
+}
+
+func (sm *StatMonth) AddDay(d []byte, n []byte) *StatMonth {
+	if sm.Days == nil {
+		sm.Days = map[uint8]uint64{}
+	}
+	sm.Days[Btoi8(d)] += Btoi64(n)
+	return sm
+}
+
+////////////////////////////////////
 var StatusCodeNames = map[string]string{
 	"200": "OK",
 	"206": "Partial Content", //resume

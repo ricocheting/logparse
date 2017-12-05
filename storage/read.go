@@ -19,7 +19,7 @@ func (st *Store) FilterBaseNumber(bucket []byte, prefix []byte) ([]Stat, error) 
 
 		for k, v := c.Seek(prefix); k != nil && bytes.HasPrefix(k, prefix); k, v = c.Next() {
 
-			stat := Stat{Name: string(k[:]), Value: internal.Btoi(v)}
+			stat := Stat{Name: string(k[:]), Value: internal.Btoi64(v)}
 
 			stats = append(stats, stat)
 		}
@@ -29,9 +29,9 @@ func (st *Store) FilterBaseNumber(bucket []byte, prefix []byte) ([]Stat, error) 
 }
 
 // ListBaseNumber
-func (st *Store) ListBaseNumber(bucket []byte) (internal.StatYear, error) {
-	var data = internal.StatYear{}
-	data.Years = make(map[string]internal.StatMonth)
+func (st *Store) ListBaseNumber(bucket []byte) (internal.StatTotal, error) {
+	var data internal.StatTotal
+	//data.Years = make(map[string]internal.StatMonth)
 
 	return data, st.db.View(func(tx *bolt.Tx) error {
 		// Assume bucket exists and has keys
@@ -39,30 +39,17 @@ func (st *Store) ListBaseNumber(bucket []byte) (internal.StatYear, error) {
 
 		// ForEach instead of b.Cursor() because we know we'll be iterating over all the keys
 		b.ForEach(func(k []byte, v []byte) error {
-			//fmt.Printf("key=%s, value=%s\n", k, v)
 
-			year, err := data.Years[string(k[0:4])]
+			//data.Get(k[0:4]).Get(k[4:6]).AddDay(k[6:8], v)
+			data.AddTotal(k[0:4], k[4:6], k[6:8], v)
 
-			if !err {
-				year.Months = make(map[string]internal.StatDay)
-			}
-
-			month, err := data.Years[string(k[0:4])].Months[string(k[4:6])]
-
-			if !err {
-				month.Days = make(map[string]uint64)
-			}
-
-			//data.Years[string(k[0:4])].Months[string(k[4:6])].Days[string(k[6:8])] = internal.Btoi(v)
-
-			//stat := Stat{Name: string(k[:]), Value: internal.Btoi(v)}
-			year.GrandTotal += internal.Btoi(v)
-			// get year, month, day from k
 			fmt.Printf("%s, %s, %s: ", k[0:4], k[4:6], k[6:8]) //2017, 12, 03
-			fmt.Printf("%d\n", year.GrandTotal)
+			fmt.Printf("\tD:%d", data.Get(k[0:4]).Get(k[4:6]).Get(k[6:8]))
+			fmt.Printf("\tGT:%d", data.Total)
+			fmt.Printf("\tY:%d", data.Get(k[0:4]).Total)
+			fmt.Printf("\tM:%d", data.Get(k[0:4]).Get(k[4:6]).Total)
 
-			//data.Collect[string(k[0:4])].Collect[k[4:6]].Stats = append(data.Collect[string(k[0:4])].Collect[k[4:6]].Stats, stat)
-			//stats = append(stats, stat)
+			fmt.Print("\n")
 
 			return nil
 		})
