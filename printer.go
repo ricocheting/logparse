@@ -62,7 +62,7 @@ func main() {
 		for month, monthData := range yearData.Months {
 			page.Hits = *monthData
 			//fmt.Printf("%s %s\n", strconv.Itoa(int(year)), strconv.Itoa(int(month)))
-			filename := strconv.Itoa(int(month)) + "-month.html"
+			filename := strconv.Itoa(int(month)) + "-" + monthData.Date.Format("January") + ".html"
 
 			// Write the file
 			file, err := os.Create(pathname + filename)

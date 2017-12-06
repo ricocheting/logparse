@@ -1,5 +1,9 @@
 package internal
 
+import (
+	"time"
+)
+
 type Stat struct {
 	Name  string
 	Value uint64
@@ -12,6 +16,7 @@ type StatCollection struct {
 	Collect    map[string]Stats //[YYYYMMDD][".jpg"]=35
 }
 
+////////////////////////////////////
 type StatTotal struct { //StatTotal[YY].Months[MM].Days[DD][".jpg"]
 	Total uint64               // total for all in database
 	Years map[uint16]*StatYear //.Years[YYYY]=
@@ -40,6 +45,10 @@ func (st *StatTotal) AddTotal(y, m, d []byte, n []byte) *StatTotal {
 	sm.Total += i
 	sm.AddDay(d, n)
 
+	if sm.Date.IsZero() {
+		sm.Date, _ = time.Parse("200601", string(y)+string(m))
+	}
+
 	return st
 }
 
@@ -65,6 +74,7 @@ func (sm *StatYear) Get(m []byte) (sd *StatMonth) {
 
 ////////////////////////////////////
 type StatMonth struct {
+	Date  time.Time        // timestamp for this month. so we can get that "201701" means save info to path /2017/01-January.html
 	Total uint64           //this months's total
 	Days  map[uint8]uint64 //.Days[DD]=35
 }
