@@ -62,9 +62,21 @@ func FormatShortDate(ts string) string {
 }
 
 // FormatMonth turns "MM" into "January"
-func FormatMonth(ts uint8) string {
-	out, _ := time.Parse("01", strconv.Itoa(int(ts)))
+func FormatMonth(m uint8) string {
+	out, _ := time.Parse("01", strconv.Itoa(int(m)))
 	return out.Format("January")
+}
+
+// FormatShortDate turns "D" into "Jan 01"
+func FormatShortMonth(ts time.Time) string {
+	//out, _ := time.Parse("1", strconv.Itoa(int(m)))
+	return ts.Format("Jan")
+}
+
+// FormatMonthYear turns timestamp into "January 2017"
+func FormatMonthYear(ts time.Time) string {
+	//out, _ := time.Parse("2006-01-02 15:04:05 -0700 MST", ts)
+	return ts.Format("January 2006")
 }
 
 // FormatCommas turns 1234567890 into 1,234,567,890

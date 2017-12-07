@@ -60,6 +60,8 @@ func main() {
 		"formatShortHand":  internal.FormatShortHand,
 		"formatStatusCode": internal.FormatStatusCodeName,
 		"formatMonth":      internal.FormatMonth,
+		"formatShortMonth": internal.FormatShortMonth,
+		"formatMonthYear":  internal.FormatMonthYear,
 		"pathDirectory":    internal.PathDirectory,
 		"pathFilename":     internal.PathFilename,
 	}

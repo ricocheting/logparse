@@ -96,7 +96,7 @@
 		</div>
 
 		<div id="contents">
-			<h2>Stats</h2>
+			<h3>{{.Hits.Date | formatMonthYear}}</h3>
 			<div class="qrow">
 				<div class="qcolumn"></div>
 				<div class="qcolumn hits">Hits</div>
@@ -105,7 +105,7 @@
 			</div>
 			{{range $i, $v := .Hits.Days}}
 			<div class="qrow">
-				<div class="qcolumn">{{$i}}</div>
+				<div class="qcolumn">{{$.Hits.Date | formatShortMonth}} {{$i}}</div>
 				<div class="qcolumn" title="{{$v}}">{{$v | formatCommas}}</div>
 				<div class="qcolumn" title="{{(index $.Pages.Days $i)}}">{{(index $.Pages.Days $i) | formatCommas}}</div>
 				<div class="qcolumn" title="{{(index $.IPS.Days $i)}}">{{(index $.IPS.Days $i) | formatCommas}}</div>
