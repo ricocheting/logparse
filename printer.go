@@ -7,19 +7,24 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"strconv"
 	"time"
 
 	"github.com/ricocheting/logparse/internal"
 	"github.com/ricocheting/logparse/storage"
 )
 
-type Page struct {
+type PageMonth struct {
 	Hits        internal.StatMonth
 	IPS         internal.StatMonth
 	Pages       internal.StatMonth
 	Extensions  internal.StatCollection
 	StatusCodes internal.StatCollection
+	DateCreated string
+}
+
+type PageYear struct { //[YYYY][MM]
+	Hits        internal.StatTotal
+	Pages       internal.StatTotal
 	DateCreated string
 }
 
@@ -32,7 +37,7 @@ func main() {
 	if err := store.Open(); err != nil {
 		panic("Error opening storage (db possibly still open by another process): " + err.Error())
 	}
-	page := Page{}
+	page := PageMonth{}
 
 	hits, _ := store.ListBaseNumber(internal.HitsBucket)
 	ips, _ := store.ListBaseNumber(internal.IPSBucket)
@@ -43,11 +48,20 @@ func main() {
 
 	//fmt.Printf("Hits: %+v\n", page.Extensions)
 
+	pageYear := PageYear{
+		Hits:        hits,
+		Pages:       pages,
+		DateCreated: page.DateCreated,
+	}
+
 	fmap := template.FuncMap{
 		"formatDate":       internal.FormatShortDate,
 		"formatCommas":     internal.FormatCommas,
 		"formatShortHand":  internal.FormatShortHand,
 		"formatStatusCode": internal.FormatStatusCodeName,
+		"formatMonth":      internal.FormatMonth,
+		"pathDirectory":    internal.PathDirectory,
+		"pathFilename":     internal.PathFilename,
 	}
 
 	tIndex := template.Must(template.New("index.html").Funcs(fmap).ParseFiles(*templateFolder + "index.html"))
@@ -56,7 +70,7 @@ func main() {
 	// Write the month files
 	for year, yearData := range hits.Years {
 		// create year folders
-		pathname := *outFolder + strconv.Itoa(int(year)) + "/"
+		pathname := *outFolder + internal.PathDirectory(year) + "/"
 		os.MkdirAll(pathname, os.ModePerm)
 
 		for month, monthData := range yearData.Months {
@@ -64,7 +78,7 @@ func main() {
 			page.IPS = *ips.Years[year].Months[month]
 			page.Pages = *pages.Years[year].Months[month]
 			//fmt.Printf("%s %s\n", strconv.Itoa(int(year)), strconv.Itoa(int(month)))
-			filename := strconv.Itoa(int(month)) + "-" + monthData.Date.Format("January") + ".html"
+			filename := internal.PathFilename(month)
 
 			// Write the file
 			file, err := os.Create(pathname + filename)
@@ -78,7 +92,6 @@ func main() {
 			}
 		}
 	}
-	page = Page{}
 
 	// Write the main index year file
 	file, err := os.Create(*outFolder + "index.html")
@@ -87,7 +100,7 @@ func main() {
 	}
 	defer file.Close()
 
-	if err := tIndex.ExecuteTemplate(file, "index.html", page); err != nil {
+	if err := tIndex.ExecuteTemplate(file, "index.html", pageYear); err != nil {
 		fmt.Println(err)
 	}
 

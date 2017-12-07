@@ -61,6 +61,12 @@ func FormatShortDate(ts string) string {
 	return out.Format("Jan 02")
 }
 
+// FormatMonth turns "MM" into "January"
+func FormatMonth(ts uint8) string {
+	out, _ := time.Parse("01", strconv.Itoa(int(ts)))
+	return out.Format("January")
+}
+
 // FormatCommas turns 1234567890 into 1,234,567,890
 func FormatCommas(n uint64) string {
 	in := strconv.FormatUint(n, 10)
@@ -112,4 +118,14 @@ func FormatStatusCodeName(code string) string {
 	} else {
 		return ""
 	}
+}
+
+// PathDirectory turns YYYY into "2017"
+func PathDirectory(y uint16) string {
+	return strconv.Itoa(int(y))
+}
+
+// PathFilename turns MM into "01-January.html"
+func PathFilename(m uint8) string {
+	return strconv.Itoa(int(m)) + "-" + FormatMonth(m) + ".html"
 }

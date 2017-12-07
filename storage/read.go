@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"bytes"
 	"encoding/json"
 
 	"github.com/boltdb/bolt"
@@ -9,7 +8,7 @@ import (
 )
 
 // where prefix = YYYY or YYYYMM that we want to watch in our search
-func (st *Store) FilterBaseNumber(bucket []byte, prefix []byte) ([]Stat, error) {
+/*func (st *Store) FilterBaseNumber(bucket []byte, prefix []byte) ([]Stat, error) {
 	var stats = []Stat{}
 
 	return stats, st.db.View(func(tx *bolt.Tx) error {
@@ -25,7 +24,7 @@ func (st *Store) FilterBaseNumber(bucket []byte, prefix []byte) ([]Stat, error) 
 
 		return nil
 	})
-}
+}*/
 
 // ListBaseNumber
 func (st *Store) ListBaseNumber(bucket []byte) (internal.StatTotal, error) {
