@@ -16,8 +16,8 @@ import (
 
 type Page struct {
 	Hits        internal.StatMonth
-	IPS         []internal.Stat
-	Pages       []internal.Stat
+	IPS         internal.StatMonth
+	Pages       internal.StatMonth
 	Extensions  internal.StatCollection
 	StatusCodes internal.StatCollection
 	DateCreated string
@@ -35,8 +35,8 @@ func main() {
 	page := Page{}
 
 	hits, _ := store.ListBaseNumber(internal.HitsBucket)
-	//	_, _ = store.ListBaseNumber(internal.IPSBucket)
-	page.Pages, _ = store.ListPages(internal.ExtensionsBucket)
+	ips, _ := store.ListBaseNumber(internal.IPSBucket)
+	pages, _ := store.ListPages(internal.ExtensionsBucket)
 	page.Extensions, _ = store.ListBaseStats(internal.ExtensionsBucket)
 	page.StatusCodes, _ = store.ListBaseStats(internal.StatusCodesBucket)
 	page.DateCreated = time.Now().Format("Mon Jan _2 15:04:05 2006")
@@ -61,6 +61,8 @@ func main() {
 
 		for month, monthData := range yearData.Months {
 			page.Hits = *monthData
+			page.IPS = *ips.Years[year].Months[month]
+			page.Pages = *pages.Years[year].Months[month]
 			//fmt.Printf("%s %s\n", strconv.Itoa(int(year)), strconv.Itoa(int(month)))
 			filename := strconv.Itoa(int(month)) + "-" + monthData.Date.Format("January") + ".html"
 

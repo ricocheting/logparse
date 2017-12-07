@@ -105,7 +105,9 @@
 			{{range $i, $v := .Hits.Days}}
 			<div class="qrow">
 				<div class="qcolumn">{{$i}}</div>
-				<div class="qcolumn" title="">{{$v | formatCommas}}</div>
+				<div class="qcolumn" title="{{$v}}">{{$v | formatCommas}}</div>
+				<div class="qcolumn" title="{{(index $.Pages.Days $i)}}">{{(index $.Pages.Days $i) | formatCommas}}</div>
+				<div class="qcolumn" title="{{(index $.IPS.Days $i)}}">{{(index $.IPS.Days $i) | formatCommas}}</div>
 			</div>
 			{{end}}
 		</div>

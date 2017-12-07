@@ -30,7 +30,6 @@ func (st *Store) FilterBaseNumber(bucket []byte, prefix []byte) ([]Stat, error) 
 // ListBaseNumber
 func (st *Store) ListBaseNumber(bucket []byte) (internal.StatTotal, error) {
 	var data internal.StatTotal
-	//data.Years = make(map[string]internal.StatMonth)
 
 	return data, st.db.View(func(tx *bolt.Tx) error {
 		// Assume bucket exists and has keys
@@ -41,14 +40,6 @@ func (st *Store) ListBaseNumber(bucket []byte) (internal.StatTotal, error) {
 
 			//data.Get(k[0:4]).Get(k[4:6]).AddDay(k[6:8], v)
 			data.AddTotal(k[0:4], k[4:6], k[6:8], v)
-
-			/*			fmt.Printf("%s, %s, %s: ", k[0:4], k[4:6], k[6:8]) //2017, 12, 03
-						fmt.Printf("\tD:%d", data.Get(k[0:4]).Get(k[4:6]).Get(k[6:8]))
-						fmt.Printf("\tGT:%d", data.Total)
-						fmt.Printf("\tY:%d", data.Get(k[0:4]).Total)
-						fmt.Printf("\tM:%d", data.Get(k[0:4]).Get(k[4:6]).Total)
-
-						fmt.Print("\n")*/
 
 			return nil
 		})
@@ -84,24 +75,25 @@ func (st *Store) ListBaseStats(bucket []byte) (internal.StatCollection, error) {
 }
 
 // ListPages
-func (st *Store) ListPages(bucket []byte) ([]Stat, error) {
-	var stats = []Stat{}
+func (st *Store) ListPages(bucket []byte) (internal.StatTotal, error) {
+	var data internal.StatTotal
 
-	return stats, st.db.View(func(tx *bolt.Tx) error {
+	return data, st.db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket(bucket)
 
 		b.ForEach(func(k []byte, v []byte) error {
 			worker := Stats{}
 			json.Unmarshal(v, &worker)
-			stat := Stat{Name: string(k[:]), Value: 0}
+			//stat := Stat{Name: string(k[:]), Value: 0}
+			var n uint64 = 0
 
 			for key, value := range worker {
 				if key == "" || key == ".shtml" || key == ".php" || key == ".htm" || key == ".html" {
-					stat.Value += value
+					n += value
 				}
 			}
 
-			stats = append(stats, stat)
+			data.AddTotal(k[0:4], k[4:6], k[6:8], internal.Itob(n))
 
 			return nil
 		})
