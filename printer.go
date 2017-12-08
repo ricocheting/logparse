@@ -17,8 +17,8 @@ type PageMonth struct {
 	Hits        internal.StatMonth
 	IPS         internal.StatMonth
 	Pages       internal.StatMonth
-	Extensions  internal.StatCollection
-	StatusCodes internal.StatCollection
+	Extensions  internal.StatMonth
+	StatusCodes internal.StatMonth
 	DateCreated string
 }
 
@@ -42,8 +42,8 @@ func main() {
 	hits, _ := store.ListBaseNumber(internal.HitsBucket)
 	ips, _ := store.ListBaseNumber(internal.IPSBucket)
 	pages, _ := store.ListPages(internal.ExtensionsBucket)
-	page.Extensions, _ = store.ListBaseStats(internal.ExtensionsBucket)
-	page.StatusCodes, _ = store.ListBaseStats(internal.StatusCodesBucket)
+	//page.Extensions, _ = store.ListBaseStats(internal.ExtensionsBucket)
+	//page.StatusCodes, _ = store.ListBaseStats(internal.StatusCodesBucket)
 	page.DateCreated = time.Now().Format("Mon Jan _2 15:04:05 2006")
 
 	//fmt.Printf("Hits: %+v\n", page.Extensions)

@@ -48,7 +48,7 @@ func (st *Store) ListBaseNumber(bucket []byte) (internal.StatTotal, error) {
 }
 
 // ListBaseStats
-func (st *Store) ListBaseStats(bucket []byte) (internal.StatCollection, error) {
+/*func (st *Store) ListBaseStats(bucket []byte) (internal.StatCollection, error) {
 	var data = internal.StatCollection{
 		Collect:    map[string]internal.Stats{},
 		GrandTotal: 0,
@@ -71,7 +71,7 @@ func (st *Store) ListBaseStats(bucket []byte) (internal.StatCollection, error) {
 
 		return nil
 	})
-}
+}*/
 
 // ListPages
 func (st *Store) ListPages(bucket []byte) (internal.StatTotal, error) {

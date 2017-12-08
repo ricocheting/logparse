@@ -4,17 +4,17 @@ import (
 	"time"
 )
 
-type Stat struct {
+type Stat struct { // still used in records.go
 	Name  string
 	Value uint64
 }
 
-type Stats map[string]uint64
+type Stats map[string]uint64 //[".jpg"]=35
 
-type StatCollection struct {
+/*type StatCollection struct {
 	GrandTotal uint64
 	Collect    map[string]Stats //[YYYYMMDD][".jpg"]=35
-}
+}*/
 
 ////////////////////////////////////
 type StatTotal struct { //StatTotal[YY].Months[MM].Days[DD][".jpg"]
@@ -43,7 +43,7 @@ func (st *StatTotal) AddTotal(y, m, d []byte, n []byte) *StatTotal {
 	sy.Total += i
 	sm := sy.Get(m)
 	sm.Total += i
-	sm.AddDay(d, n)
+	sm.AddDayNum(d, n)
 
 	if sm.Date.IsZero() {
 		sm.Date, _ = time.Parse("200601", string(y)+string(m))
@@ -74,20 +74,52 @@ func (sm *StatYear) Get(m []byte) (sd *StatMonth) {
 
 ////////////////////////////////////
 type StatMonth struct {
-	Date  time.Time        // timestamp for this month. so we can get that "201701" means save info to path /2017/01-January.html
-	Total uint64           //this months's total
-	Days  map[uint8]uint64 //.Days[DD]=35
+	Date  time.Time             // timestamp for this month. so we can get that "201701" means save info to path /2017/01-January.html
+	Total uint64                //this months's total
+	Days  map[uint8]interface{} //.Days[DD]=35
 }
 
-func (sm *StatMonth) Get(d []byte) uint64 {
+func (sm *StatMonth) Get(d []byte) interface{} {
 	return sm.Days[Btoi8(d)] // doesn't check for nil because you can read a nil map
 }
 
-func (sm *StatMonth) AddDay(d []byte, n []byte) *StatMonth {
+/*func (sm *StatMonth) AddDay(d []byte, n []byte) *StatMonth {
 	if sm.Days == nil {
 		sm.Days = map[uint8]uint64{}
 	}
 	sm.Days[Btoi8(d)] += Btoi64(n)
+	return sm
+}*/
+
+func (sm *StatMonth) AddDayStats(d []byte, name string, val uint64) {
+	if sm.Days == nil {
+		sm.Days = map[uint8]interface{}{}
+	}
+
+	if st, ok := sm.Days[Btoi8(d)].(Stats); ok {
+		st[name] = val
+		sm.Days[Btoi8(d)] = st
+	} else {
+		//initialize
+		st := Stats{}
+		st[name] = val
+		sm.Days[Btoi8(d)] = st
+	}
+
+}
+
+func (sm *StatMonth) AddDayNum(d []byte, n []byte) *StatMonth {
+	if sm.Days == nil {
+		sm.Days = map[uint8]interface{}{}
+	}
+
+	if val, ok := sm.Days[Btoi8(d)].(uint64); ok {
+		sm.Days[Btoi8(d)] = val + Btoi64(n)
+	} else {
+		//initialize
+		sm.Days[Btoi8(d)] = Btoi64(n)
+	}
+
 	return sm
 }
 
@@ -109,14 +141,14 @@ var StatusCodeNames = map[string]string{
 	"500": "Internal Server Error",
 }
 
-func (sc *StatCollection) Add(dateKey, name string, val uint64) {
+/*func (sc *StatCollection) Add(dateKey, name string, val uint64) {
 	st := sc.Collect[dateKey]
 	if st == nil {
 		st = Stats{}
 		sc.Collect[dateKey] = st
 	}
 	st[name] = val
-}
+}*/
 
 var (
 	//namesBucket       = []byte("buckets")

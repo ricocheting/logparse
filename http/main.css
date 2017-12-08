@@ -32,6 +32,10 @@ footer .text-muted {
 	text-align: left;
 }
 
+.qcolumn:first-child a {
+	text-decoration: underline;
+}
+
 .qcolumn.hits {
 	background-color: #008040;
 	color: white;
