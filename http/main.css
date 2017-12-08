@@ -1,0 +1,76 @@
+footer {
+	background-color: #f5f5f5;
+	text-align: center;
+	vertical-align: middle;
+	margin-top: 50px;
+}
+
+footer .text-muted {
+	margin: 10px 0;
+}
+
+
+/* div table */
+
+.qrow {
+	display: table-row;
+}
+
+.qrow:nth-of-type(even) {
+	background-color: #f9f9f9;
+}
+
+.qcolumn {
+	padding: .3em .5em;
+	display: table-cell;
+	min-width: 80px;
+	text-align: right;
+}
+
+.qcolumn:first-child {
+	font-weight: bold;
+	text-align: left;
+}
+
+.qcolumn.hits {
+	background-color: #008040;
+	color: white;
+	font-weight: bold;
+}
+
+.qcolumn.pages {
+	background-color: #0080FF;
+	color: white;
+	font-weight: bold;
+}
+
+.qcolumn.visitors {
+	background-color: rgb(243, 215, 58);
+	color: black;
+	font-weight: bold;
+}
+
+.qcolumn.total {
+	border-top: 2px solid black;
+	font-weight: bold;
+}
+
+
+/* flexbox elements */
+
+.fcontain {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.fw {
+	margin-right: 10px;
+}
+
+.fcontain td:first-child {
+	text-align: left;
+}
+
+.fcontain td:last-child {
+	text-align: right;
+}
