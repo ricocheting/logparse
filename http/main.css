@@ -78,3 +78,8 @@ footer .text-muted {
 .fcontain td:last-child {
 	text-align: right;
 }
+
+.status-green {
+	/* used for highlighting Status Codes */
+	background-color: #c1e9b2
+}

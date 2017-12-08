@@ -42,8 +42,8 @@ func main() {
 	hits, _ := store.ListBaseNumber(internal.HitsBucket)
 	ips, _ := store.ListBaseNumber(internal.IPSBucket)
 	pages, _ := store.ListPages(internal.ExtensionsBucket)
-	//page.Extensions, _ = store.ListBaseStats(internal.ExtensionsBucket)
-	//page.StatusCodes, _ = store.ListBaseStats(internal.StatusCodesBucket)
+	extensions, _ := store.ListBaseStats(internal.ExtensionsBucket)
+	statusCodes, _ := store.ListBaseStats(internal.StatusCodesBucket)
 	page.DateCreated = time.Now().Format("Mon Jan _2 15:04:05 2006")
 
 	//fmt.Printf("Hits: %+v\n", page.Extensions)
@@ -79,7 +79,9 @@ func main() {
 			page.Hits = *monthData
 			page.IPS = *ips.Years[year].Months[month]
 			page.Pages = *pages.Years[year].Months[month]
-			//fmt.Printf("%s %s\n", strconv.Itoa(int(year)), strconv.Itoa(int(month)))
+			page.Extensions = *extensions.Years[year].Months[month]
+			page.StatusCodes = *statusCodes.Years[year].Months[month]
+
 			filename := internal.PathFilename(month)
 
 			// Write the file

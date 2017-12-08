@@ -16,8 +16,8 @@ type Stats map[string]uint64 //[".jpg"]=35
 	Collect    map[string]Stats //[YYYYMMDD][".jpg"]=35
 }*/
 
-////////////////////////////////////
-type StatTotal struct { //StatTotal[YY].Months[MM].Days[DD][".jpg"]
+//#####################################
+type StatTotal struct { //StatTotal[YY].Months[MM].Days[DD] is [".jpg"]=1500 or directly =1500
 	Total uint64               // total for all in database
 	Years map[uint16]*StatYear //.Years[YYYY]=
 }
@@ -35,15 +35,30 @@ func (st *StatTotal) Get(y []byte) (sm *StatYear) {
 	}
 	return
 }
-func (st *StatTotal) AddTotal(y, m, d []byte, n []byte) *StatTotal {
-	i := Btoi64(n)
+func (st *StatTotal) AddTotal(y, m, d []byte, ni []byte) *StatTotal {
+	i := Btoi64(ni)
 
 	st.Total += i
 	sy := st.Get(y)
 	sy.Total += i
 	sm := sy.Get(m)
 	sm.Total += i
-	sm.AddDayNum(d, n)
+	sm.AddDayNum(d, ni)
+
+	if sm.Date.IsZero() {
+		sm.Date, _ = time.Parse("200601", string(y)+string(m))
+	}
+
+	return st
+}
+func (st *StatTotal) AddStat(y, m, d []byte, name string, i uint64) *StatTotal {
+
+	st.Total += i
+	sy := st.Get(y)
+	sy.Total += i
+	sm := sy.Get(m)
+	sm.Total += i
+	sm.AddDayStats(d, name, i)
 
 	if sm.Date.IsZero() {
 		sm.Date, _ = time.Parse("200601", string(y)+string(m))
@@ -52,7 +67,7 @@ func (st *StatTotal) AddTotal(y, m, d []byte, n []byte) *StatTotal {
 	return st
 }
 
-////////////////////////////////////
+//#####################################
 type StatYear struct {
 	Total  uint64               //this year's total
 	Months map[uint8]*StatMonth //.Months[MM]=
@@ -72,7 +87,7 @@ func (sm *StatYear) Get(m []byte) (sd *StatMonth) {
 	return
 }
 
-////////////////////////////////////
+//#####################################
 type StatMonth struct {
 	Date  time.Time             // timestamp for this month. so we can get that "201701" means save info to path /2017/01-January.html
 	Total uint64                //this months's total

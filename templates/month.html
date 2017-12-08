@@ -21,21 +21,65 @@
 		</div>
 
 		<div id="contents">
-			<h3>{{.Hits.Date | formatMonthYear}}</h3>
+			<h2>{{.Hits.Date | formatMonthYear}}</h2>
 			<div class="qrow">
 				<div class="qcolumn"></div>
 				<div class="qcolumn hits">Hits</div>
 				<div class="qcolumn pages">Pages</div>
 				<div class="qcolumn visitors">Visitors</div>
 			</div>
-			{{range $i, $v := .Hits.Days}}
+			{{range $day, $v := .Hits.Days}}
 			<div class="qrow">
-				<div class="qcolumn">{{$.Hits.Date | formatShortMonth}} {{printf "%.02d" $i}}</div>
+				<div class="qcolumn">{{$.Hits.Date | formatShortMonth}} {{printf "%.02d" $day}}</div>
 				<div class="qcolumn" title="{{$v}}">{{$v | formatCommas}}</div>
-				<div class="qcolumn" title="{{(index $.Pages.Days $i)}}">{{(index $.Pages.Days $i) | formatCommas}}</div>
-				<div class="qcolumn" title="{{(index $.IPS.Days $i)}}">{{(index $.IPS.Days $i) | formatCommas}}</div>
+				<div class="qcolumn" title="{{(index $.Pages.Days $day)}}">{{(index $.Pages.Days $day) | formatCommas}}</div>
+				<div class="qcolumn" title="{{(index $.IPS.Days $day)}}">{{(index $.IPS.Days $day) | formatCommas}}</div>
 			</div>
 			{{end}}
+		</div>
+
+
+		<div id="contents">
+			<h3>File Extensions</h3>
+			<div class="fcontain">
+				{{range $day, $v := .Extensions.Days}}
+				<div class="fw">
+					<h5>{{$.Hits.Date | formatShortMonth}} {{printf "%.02d" $day}}</h5>
+					<table class="table table-bordered table-condensed">
+						<tbody>
+							{{range $name, $value := $v}}
+							<tr>
+								<td>{{if eq $name ""}}./{{else}}{{$name}}{{end}}</td>
+								<td>{{$value | formatCommas}}</td>
+							</tr>
+							{{end}}
+						</tbody>
+					</table>
+				</div>
+				{{end}}
+			</div>
+		</div>
+
+
+		<div id="contents">
+			<h3>Status Codes</h3>
+			<div class="fcontain">
+				{{range $day, $v := .StatusCodes.Days}}
+				<div class="fw">
+					<h5>{{$.Hits.Date | formatShortMonth}} {{printf "%.02d" $day}}</h5>
+					<table class="table table-bordered table-condensed">
+						<tbody>
+							{{range $name, $value := $v}}
+							<tr>
+								<td title="{{$name | formatStatusCode}}" {{if eq $name "200" "304"}}class="status-green" {{end}}>{{$name}}</td>
+								<td>{{$value | formatCommas}}</td>
+							</tr>
+							{{end}}
+						</tbody>
+					</table>
+				</div>
+				{{end}}
+			</div>
 		</div>
 
 	</div>

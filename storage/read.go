@@ -48,11 +48,8 @@ func (st *Store) ListBaseNumber(bucket []byte) (internal.StatTotal, error) {
 }
 
 // ListBaseStats
-/*func (st *Store) ListBaseStats(bucket []byte) (internal.StatCollection, error) {
-	var data = internal.StatCollection{
-		Collect:    map[string]internal.Stats{},
-		GrandTotal: 0,
-	}
+func (st *Store) ListBaseStats(bucket []byte) (internal.StatTotal, error) {
+	var data internal.StatTotal
 
 	return data, st.db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket(bucket)
@@ -62,8 +59,9 @@ func (st *Store) ListBaseNumber(bucket []byte) (internal.StatTotal, error) {
 			json.Unmarshal(v, &worker)
 
 			for key, value := range worker {
-				data.Add(string(k), key, value)
-				data.GrandTotal += value
+				//data.Add(string(k), key, value)
+				data.AddStat(k[0:4], k[4:6], k[6:8], key, value)
+				//data.GrandTotal += value
 			}
 
 			return nil
@@ -71,7 +69,7 @@ func (st *Store) ListBaseNumber(bucket []byte) (internal.StatTotal, error) {
 
 		return nil
 	})
-}*/
+}
 
 // ListPages
 func (st *Store) ListPages(bucket []byte) (internal.StatTotal, error) {
