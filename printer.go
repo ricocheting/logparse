@@ -22,9 +22,14 @@ type PageMonth struct {
 	DateCreated string
 }
 
-type PageYear struct { //[YYYY][MM]
+type PageYear struct {
 	Hits        internal.StatTotal
 	Pages       internal.StatTotal
+	DateCreated string
+}
+
+type PageError struct {
+	Errors      internal.StatErrors
 	DateCreated string
 }
 
@@ -55,6 +60,11 @@ func main() {
 		DateCreated: page.DateCreated,
 	}
 
+	pageError := PageError{
+		Errors:      errors,
+		DateCreated: page.DateCreated,
+	}
+
 	fmap := template.FuncMap{
 		"formatDate":       internal.FormatShortDate,
 		"formatCommas":     internal.FormatCommas,
@@ -69,6 +79,7 @@ func main() {
 
 	tIndex := template.Must(template.New("index.html").Funcs(fmap).ParseFiles(*templateFolder + "index.html"))
 	tMonth := template.Must(template.New("month.html").Funcs(fmap).ParseFiles(*templateFolder + "month.html"))
+	tErrors := template.Must(template.New("errors.html").Funcs(fmap).ParseFiles(*templateFolder + "errors.html"))
 
 	// Write the month files
 	for year, yearData := range hits.Years {
@@ -98,17 +109,28 @@ func main() {
 		}
 	}
 
-	for page, missing := range errors.Page {
+	// Write the error file
+	file, err := os.Create(*outFolder + "errors.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	if err := tErrors.ExecuteTemplate(file, "errors.html", pageError); err != nil {
+		fmt.Println(err)
+	}
+
+	/*for page, missing := range errors.Page {
 
 		// walk through the new data
 		for key, value := range missing {
 			fmt.Printf("%d %s %s\n", value, page, key)
 		}
 
-	}
+	}*/
 
 	// Write the main index year file
-	file, err := os.Create(*outFolder + "index.html")
+	file, err = os.Create(*outFolder + "index.html")
 	if err != nil {
 		log.Fatal(err)
 	}

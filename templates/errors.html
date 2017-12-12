@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>nginx Stats</title>
+
+	<link href="bootstrap.min.css" rel="stylesheet">
+	<link href="main.css" rel="stylesheet">
+
+	<style type="text/css">
+		.qcolumn {
+			text-align: left;
+		}
+		
+		.missing_page {
+			margin-top: 15px;
+			padding-left: 6px;
+			background-color: rgb(212, 212, 212);
+		}
+	</style>
+
+</head>
+
+<body>
+
+	<div class="container">
+
+		<div class="page-header">
+			<h1>sitename.com</h1>
+		</div>
+
+		<div id="contents">
+			<h2>Errors</h2>
+
+			{{range $missing, $v := .Errors.Page}}
+			<div class="missing_page">{{$missing}}</div>
+			{{range $page, $val := $v}}
+			<div class="qrow">
+				<div class="qcolumn"></div>
+				<div class="qcolumn">{{$val}}</div>
+				<div class="qcolumn">{{$page}}</div>
+			</div>
+			{{end}} {{end}}
+		</div>
+
+	</div>
+	<footer>
+		<div class="container">
+			<p class="text-muted">Date Last Updated: {{.DateCreated}}</p>
+		</div>
+	</footer>
+
+</body>
+
+</html>
