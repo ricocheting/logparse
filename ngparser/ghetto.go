@@ -49,15 +49,19 @@ type Record struct {
 
 type Stat = internal.Stat
 type Stats = internal.Stats
+type StatErrors = internal.StatErrors
+
+//func StatErrors.Add() = internal.StatErrors.Add()
 
 type Parser struct {
 	mux      sync.RWMutex
 	store    *storage.Store
 	domainRe *regexp.Regexp
 
-	data  [maxType]Stats
-	count uint64
-	ipv6  uint64
+	data   [maxType]Stats
+	errors []StatErrors
+	count  uint64
+	ipv6   uint64
 }
 
 func New(domain string) *Parser {
@@ -161,7 +165,8 @@ func (p *Parser) Parse(r io.Reader, fn func(r *Record)) {
 			p.data[Extensions][strings.ToLower(filepath.Ext(cleanPath))]++
 		} else if r.Status == "404" && r.Referer != "-" && p.domainRe != nil && p.domainRe.MatchString(r.Referer) {
 			// if the status is 404 and a domain was passed in and the referer matches the domain
-			fmt.Printf("404: %s , %s\n", cleanPath, r.Referer)
+			//fmt.Printf("404: %s , %s\n", cleanPath, r.Referer)
+			p.errors.Add(r.Referer, cleanPath)
 
 		}
 
