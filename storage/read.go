@@ -98,3 +98,27 @@ func (st *Store) ListPages(bucket []byte) (internal.StatTotal, error) {
 		return nil
 	})
 }
+
+// ListErrors
+func (st *Store) ListErrors(bucket []byte) (internal.StatErrors, error) {
+	var data internal.StatErrors
+
+	return data, st.db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket(bucket)
+
+		b.ForEach(func(page []byte, v []byte) error {
+			worker := Stats{}
+			json.Unmarshal(v, &worker)
+
+			for missing, value := range worker {
+				//data.Add(string(k), key, value)
+				data.SetVal(string(page), missing, value)
+				//data.GrandTotal += value
+			}
+
+			return nil
+		})
+
+		return nil
+	})
+}

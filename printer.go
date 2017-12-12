@@ -44,6 +44,7 @@ func main() {
 	pages, _ := store.ListPages(internal.ExtensionsBucket)
 	extensions, _ := store.ListBaseStats(internal.ExtensionsBucket)
 	statusCodes, _ := store.ListBaseStats(internal.StatusCodesBucket)
+	errors, _ := store.ListErrors(internal.ErrorsBucket)
 	page.DateCreated = time.Now().Format("Mon Jan _2 15:04:05 2006")
 
 	//fmt.Printf("Hits: %+v\n", page.Extensions)
@@ -95,6 +96,15 @@ func main() {
 				fmt.Println(err)
 			}
 		}
+	}
+
+	for page, missing := range errors.Page {
+
+		// walk through the new data
+		for key, value := range missing {
+			fmt.Printf("%d %s %s\n", value, page, key)
+		}
+
 	}
 
 	// Write the main index year file

@@ -64,3 +64,39 @@ func (st *Store) SaveBaseStats(bucket []byte, dateKey []byte, data Stats) error 
 		return nil
 	})
 }
+
+// AppendErrors will insert or update the StatErrors collection
+func (st *Store) AppendErrors(bucket []byte, data internal.StatErrors) error {
+
+	return st.db.Batch(func(tx *bolt.Tx) error {
+		b := tx.Bucket(bucket)
+
+		for page, missing := range data.Page {
+			bPage := []byte(page) //byte array page
+			raw := b.Get(bPage)
+
+			worker := Stats{}
+			json.Unmarshal(raw, &worker)
+
+			// walk through the new data
+			for key, value := range missing {
+				// if stored worker[i] exists, I need to add data[i] value to it.
+				if wVal, ok := worker[key]; ok {
+					worker[key] = wVal + value
+				} else { // if it doesn't exist, I need to create it
+					worker[key] = value
+				}
+			}
+
+			// save stats back up and insert it into the dtabase
+			buf, err := json.Marshal(worker)
+			if err != nil {
+				return err
+			}
+
+			b.Put(bPage, buf)
+		}
+
+		return nil
+	})
+}

@@ -39,7 +39,7 @@ func (st *Store) Open() error {
 		tx.CreateBucketIfNotExists(internal.ExtensionsBucket)
 		tx.CreateBucketIfNotExists(internal.StatusCodesBucket)
 		tx.CreateBucketIfNotExists(internal.IPSBucket)
-		tx.CreateBucketIfNotExists(internal.NotFoundBucket)
+		tx.CreateBucketIfNotExists(internal.ErrorsBucket)
 		return nil
 	}); err != nil {
 		st.Close()

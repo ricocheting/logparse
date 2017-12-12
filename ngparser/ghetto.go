@@ -59,7 +59,7 @@ type Parser struct {
 	domainRe *regexp.Regexp
 
 	data   [maxType]Stats
-	errors []StatErrors
+	errors StatErrors
 	count  uint64
 	ipv6   uint64
 }
@@ -166,7 +166,7 @@ func (p *Parser) Parse(r io.Reader, fn func(r *Record)) {
 		} else if r.Status == "404" && r.Referer != "-" && p.domainRe != nil && p.domainRe.MatchString(r.Referer) {
 			// if the status is 404 and a domain was passed in and the referer matches the domain
 			//fmt.Printf("404: %s , %s\n", cleanPath, r.Referer)
-			p.errors.Add(r.Referer, cleanPath)
+			p.errors.Increment(r.Referer, cleanPath)
 
 		}
 
@@ -265,5 +265,11 @@ func (p *Parser) saveData(dateKey []byte) {
 	err = p.store.SaveBaseStats(internal.StatusCodesBucket, dateKey, p.data[StatusCodes])
 	if err != nil {
 		panic("Error saveData() StatusCodes: " + err.Error())
+	}
+
+	//Errors
+	err = p.store.AppendErrors(internal.ErrorsBucket, p.errors)
+	if err != nil {
+		panic("Error saveData() Errors: " + err.Error())
 	}
 }

@@ -172,7 +172,7 @@ var (
 	ExtensionsBucket  = []byte("extensions")
 	StatusCodesBucket = []byte("statuscodes")
 	IPSBucket         = []byte("ips")
-	NotFoundBucket    = []byte("notfound")
+	ErrorsBucket      = []byte("errors")
 	//errBucketNotFound = errors.New("Bucket not found")
 	//errActIDExists    = errors.New("ActID already associated with Task")
 )
@@ -182,7 +182,7 @@ type StatErrors struct {
 	Page map[string]Stats //.Page["https://www.example.com/errors.html"]["/404/missing.jog"]=36
 }
 
-func (se *StatErrors) Add(page, missing string) *StatErrors {
+func (se *StatErrors) Increment(page, missing string) *StatErrors {
 	if se.Page == nil {
 		se.Page = map[string]Stats{}
 	}
@@ -194,6 +194,24 @@ func (se *StatErrors) Add(page, missing string) *StatErrors {
 		//initialize
 		st := Stats{}
 		st[missing] = 1
+		se.Page[page] = st
+	}
+
+	return se
+}
+
+func (se *StatErrors) SetVal(page, missing string, val uint64) *StatErrors {
+	if se.Page == nil {
+		se.Page = map[string]Stats{}
+	}
+
+	if st, ok := se.Page[page]; ok {
+		st[missing] = val
+		se.Page[page] = st
+	} else {
+		//initialize
+		st := Stats{}
+		st[missing] = val
 		se.Page[page] = st
 	}
 
