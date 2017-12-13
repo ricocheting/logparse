@@ -29,7 +29,7 @@ type PageYear struct {
 }
 
 type PageError struct {
-	Errors      internal.StatErrors
+	Errors      []internal.StatErrorPage
 	DateCreated string
 }
 

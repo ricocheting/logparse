@@ -2,6 +2,7 @@ package storage
 
 import (
 	"encoding/json"
+	"sort"
 
 	"github.com/boltdb/bolt"
 	"github.com/ricocheting/logparse/internal"
@@ -100,10 +101,11 @@ func (st *Store) ListPages(bucket []byte) (internal.StatTotal, error) {
 }
 
 // ListErrors
-func (st *Store) ListErrors(bucket []byte) (internal.StatErrors, error) {
+func (st *Store) ListErrors(bucket []byte) ([]internal.StatErrorPage, error) {
 	var data internal.StatErrors
+	var out []internal.StatErrorPage
 
-	return data, st.db.View(func(tx *bolt.Tx) error {
+	return out, st.db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket(bucket)
 
 		b.ForEach(func(page []byte, v []byte) error {
@@ -118,6 +120,11 @@ func (st *Store) ListErrors(bucket []byte) (internal.StatErrors, error) {
 
 			return nil
 		})
+
+		// sorting outside the lock
+		//sort.Sort(data)
+		out = data.ToSlice(0)
+		sort.Slice(out, func(i, j int) bool { return out[i].Total > out[j].Total })
 
 		return nil
 	})

@@ -153,6 +153,7 @@ type StatErrors struct {
 }
 
 type StatErrorPage struct {
+	Page    string            //used when sorting into []StatErrorPage instead of StatErrors.Page map
 	Total   uint64            //.Page["https://www.example.com/errors.html"].Total = 329687296
 	Missing map[string]uint64 //.Page["https://www.example.com/errors.html"].Missing["/404/missing.jog"] = 36
 }
@@ -198,4 +199,15 @@ func (se *StatErrors) SetVal(page, missing string, val uint64) *StatErrors {
 	}
 
 	return se
+}
+
+func (se StatErrors) ToSlice(min uint64) []StatErrorPage { //still used on ghetto.go
+	out := make([]StatErrorPage, 0, len(se.Page))
+	for k, v := range se.Page {
+		if min > 0 && v.Total < min {
+			continue
+		}
+		out = append(out, StatErrorPage{Page: k, Total: v.Total, Missing: v.Missing})
+	}
+	return out[:len(out):len(out)] // trim the slice to release the unused memory
 }
