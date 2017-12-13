@@ -13,12 +13,21 @@
 	<style type="text/css">
 		.qcolumn {
 			text-align: left;
+			width: 100%;
+		}
+		
+		.qcolumn:first-child {
+			font-weight: normal;
+			text-align: right;
+			width: auto;
 		}
 		
 		.missing_page {
 			margin-top: 15px;
 			padding-left: 6px;
-			background-color: rgb(212, 212, 212);
+			/*background-color: rgb(212, 212, 212);*/
+			font-weight: bold;
+			width: 100%;
 		}
 	</style>
 
@@ -36,11 +45,10 @@
 			<h2>Errors</h2>
 
 			{{range $k, $v := .Errors}}
-			<div class="missing_page">{{$v.Total}} {{$v.Page}}</div>
+			<div class="missing_page">{{$v.Page}} <span class="badge">{{$v.Total | formatCommas}}</span></div>
 			{{range $page, $val := $v.Missing}}
 			<div class="qrow">
-				<div class="qcolumn"></div>
-				<div class="qcolumn">{{$val}}</div>
+				<div class="qcolumn">{{$val | formatCommas}}</div>
 				<div class="qcolumn">{{$page}}</div>
 			</div>
 			{{end}} {{end}}
