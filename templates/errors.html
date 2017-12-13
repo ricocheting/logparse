@@ -36,8 +36,8 @@
 			<h2>Errors</h2>
 
 			{{range $missing, $v := .Errors.Page}}
-			<div class="missing_page">{{$missing}}</div>
-			{{range $page, $val := $v}}
+			<div class="missing_page">{{$v.Total}} {{$missing}}</div>
+			{{range $page, $val := $v.Missing}}
 			<div class="qrow">
 				<div class="qcolumn"></div>
 				<div class="qcolumn">{{$val}}</div>

@@ -71,7 +71,7 @@ func (st *Store) AppendErrors(bucket []byte, data internal.StatErrors) error {
 	return st.db.Batch(func(tx *bolt.Tx) error {
 		b := tx.Bucket(bucket)
 
-		for page, missing := range data.Page {
+		for page, v := range data.Page {
 			bPage := []byte(page) //byte array page
 			raw := b.Get(bPage)
 
@@ -79,7 +79,7 @@ func (st *Store) AppendErrors(bucket []byte, data internal.StatErrors) error {
 			json.Unmarshal(raw, &worker)
 
 			// walk through the new data
-			for key, value := range missing {
+			for key, value := range v.Missing {
 				// if stored worker[i] exists, I need to add data[i] value to it.
 				if wVal, ok := worker[key]; ok {
 					worker[key] = wVal + value

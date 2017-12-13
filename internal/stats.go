@@ -149,22 +149,30 @@ func (sm *StatMonth) AddDayNum(d []byte, n []byte) *StatMonth {
 
 //#####################################
 type StatErrors struct {
-	Page map[string]Stats //.Page["https://www.example.com/errors.html"]["/404/missing.jog"]=36
+	Page map[string]StatErrorPage //.Page["https://www.example.com/errors.html"].Missing["/404/missing.jog"] = 36
+}
+
+type StatErrorPage struct {
+	Total   uint64            //.Page["https://www.example.com/errors.html"].Total = 329687296
+	Missing map[string]uint64 //.Page["https://www.example.com/errors.html"].Missing["/404/missing.jog"] = 36
 }
 
 func (se *StatErrors) Increment(page, missing string) *StatErrors {
 	if se.Page == nil {
-		se.Page = map[string]Stats{}
+		se.Page = map[string]StatErrorPage{}
 	}
 
-	if st, ok := se.Page[page]; ok {
-		st[missing]++
-		se.Page[page] = st
+	if sep, ok := se.Page[page]; ok {
+		sep.Missing[missing]++
+		sep.Total++
+		se.Page[page] = sep
 	} else {
 		//initialize
-		st := Stats{}
-		st[missing] = 1
-		se.Page[page] = st
+		sep := StatErrorPage{}
+
+		sep.Missing[missing] = 1
+		sep.Total++
+		se.Page[page] = sep
 	}
 
 	return se
@@ -172,17 +180,21 @@ func (se *StatErrors) Increment(page, missing string) *StatErrors {
 
 func (se *StatErrors) SetVal(page, missing string, val uint64) *StatErrors {
 	if se.Page == nil {
-		se.Page = map[string]Stats{}
+		se.Page = map[string]StatErrorPage{}
 	}
 
-	if st, ok := se.Page[page]; ok {
-		st[missing] = val
-		se.Page[page] = st
+	if sep, ok := se.Page[page]; ok {
+		sep.Missing[missing] = val
+		sep.Total += val
+		se.Page[page] = sep
 	} else {
 		//initialize
-		st := Stats{}
-		st[missing] = val
-		se.Page[page] = st
+		sep := StatErrorPage{}
+		sep.Missing = map[string]uint64{}
+
+		sep.Missing[missing] = val
+		sep.Total += val
+		se.Page[page] = sep
 	}
 
 	return se
