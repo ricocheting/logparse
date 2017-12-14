@@ -170,6 +170,7 @@ func (se *StatErrors) Increment(page, missing string) *StatErrors {
 	} else {
 		//initialize
 		sep := StatErrorPage{}
+		sep.Missing = map[string]uint64{}
 
 		sep.Missing[missing] = 1
 		sep.Total++
