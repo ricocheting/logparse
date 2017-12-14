@@ -81,7 +81,7 @@ func New(domain string) *Parser {
 	}
 
 	if domain != "" {
-		p.domainRe = regexp.MustCompile("^https?://(www.)?" + domain)
+		p.domainRe = regexp.MustCompile("^https?://(www.)?" + domain + "(.*)$")
 	}
 
 	return p
@@ -163,11 +163,10 @@ func (p *Parser) Parse(r io.Reader, fn func(r *Record)) {
 			//p.data[Hits][r.Filename]++
 			//p.data[UserAgents][r.UserAgent]++ // probably should parse the agent and store something like Chrome-XX, IE11, Edge, etc.
 			p.data[Extensions][strings.ToLower(filepath.Ext(cleanPath))]++
-		} else if r.Status == "404" && r.Referer != "-" && p.domainRe != nil && p.domainRe.MatchString(r.Referer) {
+		} else if parsed := p.domainRe.FindAllStringSubmatch(r.Referer, -1); r.Status == "404" && r.Referer != "-" && p.domainRe != nil && len(parsed) == 1 && len(parsed[0]) == 3 {
 			// if the status is 404 and a domain was passed in and the referer matches the domain
-			//fmt.Printf("404: %s , %s\n", cleanPath, r.Referer)
-			p.errors.Increment(r.Referer, cleanPath)
-
+			//fmt.Printf("404: %s , %s , %s\n", cleanPath, r.Referer, parsed[0][2])
+			p.errors.Increment(parsed[0][2], cleanPath)
 		}
 
 		p.mux.Unlock()
