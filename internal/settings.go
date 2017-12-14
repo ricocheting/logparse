@@ -19,13 +19,13 @@ var StatusCodeNames = map[string]string{
 }
 
 var (
-	//namesBucket       = []byte("buckets")
 	YearBucket        = []byte("year")
 	HitsBucket        = []byte("hits")
 	ExtensionsBucket  = []byte("extensions")
 	StatusCodesBucket = []byte("statuscodes")
 	IPSBucket         = []byte("ips")
 	ErrorsBucket      = []byte("errors")
-	//errBucketNotFound = errors.New("Bucket not found")
-	//errActIDExists    = errors.New("ActID already associated with Task")
+
+	// this is used for parsing refers and for printing headers to the template if no -domain="" command line flag is passed in (both parser and printer)
+	DefaultDomain = "sitename.com"
 )

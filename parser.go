@@ -7,18 +7,19 @@ import (
 	"os"
 	"time"
 
+	"github.com/ricocheting/logparse/internal"
 	"github.com/ricocheting/logparse/ngparser"
 )
 
 func main() {
 	logfile := flag.String("log", "", "Log file to process")
-	domain := flag.String("domain", "", "Domain for log file. Used for ignoring records. Use format \"example.com\"")
+	domain := flag.String("domain", internal.DefaultDomain, "Domain for log file. Used for ignoring records. Use format \"example.com\"")
 	flag.Parse()
 
 	t1 := time.Now()
 
 	// show what log we're running
-	if *domain != "" {
+	if *domain != internal.DefaultDomain {
 		fmt.Print(*domain + " ") //prepend to date line below
 	}
 	fmt.Println(t1.Format("2006-01-02 15:04:05"))

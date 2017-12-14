@@ -20,22 +20,26 @@ type PageMonth struct {
 	Extensions  internal.StatMonth
 	StatusCodes internal.StatMonth
 	DateCreated string
+	Domain      string
 }
 
 type PageYear struct {
 	Hits        internal.StatTotal
 	Pages       internal.StatTotal
 	DateCreated string
+	Domain      string
 }
 
 type PageError struct {
 	Errors      []internal.StatErrorPage
 	DateCreated string
+	Domain      string
 }
 
 func main() {
 	templateFolder := flag.String("templates", "templates/", "Template folder. Include trailing slash")
 	outFolder := flag.String("out", "http/", "Output folder. Include trailing slash")
+	domain := flag.String("domain", internal.DefaultDomain, "Domain for log file. Used for ignoring records. Use format \"example.com\"")
 	flag.Parse()
 
 	store := storage.NewStore(filepath.Join("data", "db"))
@@ -51,6 +55,7 @@ func main() {
 	statusCodes, _ := store.ListBaseStats(internal.StatusCodesBucket)
 	errors, _ := store.ListErrors(internal.ErrorsBucket)
 	page.DateCreated = time.Now().Format("Mon Jan _2 15:04:05 2006")
+	page.Domain = *domain
 
 	//fmt.Printf("Hits: %+v\n", page.Extensions)
 
@@ -58,11 +63,13 @@ func main() {
 		Hits:        hits,
 		Pages:       pages,
 		DateCreated: page.DateCreated,
+		Domain:      *domain,
 	}
 
 	pageError := PageError{
 		Errors:      errors,
 		DateCreated: page.DateCreated,
+		Domain:      *domain,
 	}
 
 	fmap := template.FuncMap{
