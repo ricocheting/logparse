@@ -225,7 +225,7 @@ func (p *Parser) parseLine(wg *sync.WaitGroup, in chan string, out chan *Record)
 		if parsed := cp.FindAllStringSubmatch(l, -1); len(parsed) == 1 {
 			line = parsed[0]
 		} else {
-			fmt.Println(l)
+			//fmt.Println(l) // uncomment this line if you want to find log lines that aren't being parsed
 			continue
 		}
 
