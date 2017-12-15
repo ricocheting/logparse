@@ -32,7 +32,7 @@ const (
 	timeFmt = `02/Jan/2006:15:04:05 -0700`
 )
 
-var re = regexp.MustCompile(`(.+?)\s[^[]+\[([^\]]+)\]\s"(\w+) (.+?)\sHTTP/(\d\.\d)"\s+(\d+)\s+(\d+)\s+"([^"]+)"\s+"([^"]+)"`)
+var re = regexp.MustCompile(`(.+?)\s[^[]+\[([^\]]+)\]\s"(\w+) (.+?)\sHTTP/(\d\.\d)"\s+(\d+)\s+(\d+)\s+"([^"]*)"\s+"([^"]+)"`)
 
 //var store *storage.Store
 
@@ -163,8 +163,9 @@ func (p *Parser) Parse(r io.Reader, fn func(r *Record)) {
 			//p.data[Hits][r.Filename]++
 			//p.data[UserAgents][r.UserAgent]++ // probably should parse the agent and store something like Chrome-XX, IE11, Edge, etc.
 			p.data[Extensions][strings.ToLower(filepath.Ext(cleanPath))]++
-		} else if r.Status == "404" && r.Referer != "-" && p.domainRe != nil {
-			if parsed := p.domainRe.FindAllStringSubmatch(r.Referer, -1); len(parsed) == 1 && len(parsed[0]) == 3 {
+		} else if r.Status == "404" && r.Referer != "-" && p.domainRe != nil && len(r.Referer) < 255 && len(cleanPath) < 255 {
+			// if file and referer are the same, it's fake
+			if parsed := p.domainRe.FindAllStringSubmatch(r.Referer, -1); len(parsed) == 1 && len(parsed[0]) == 3 && parsed[0][2] != cleanPath {
 				// if the status is 404 and a domain was passed in and the referer matches the domain
 				//fmt.Printf("404: %s , %s , %s\n", cleanPath, r.Referer, parsed[0][2])
 				p.errors.Increment(parsed[0][2], cleanPath)
@@ -224,6 +225,7 @@ func (p *Parser) parseLine(wg *sync.WaitGroup, in chan string, out chan *Record)
 		if parsed := cp.FindAllStringSubmatch(l, -1); len(parsed) == 1 {
 			line = parsed[0]
 		} else {
+			fmt.Println(l)
 			continue
 		}
 
