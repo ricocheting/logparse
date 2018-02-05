@@ -63,7 +63,7 @@ func FormatShortDate(ts string) string {
 
 // FormatMonth turns "MM" into "January"
 func FormatMonth(m uint8) string {
-	out, _ := time.Parse("01", strconv.Itoa(int(m)))
+	out, _ := time.Parse("1", strconv.Itoa(int(m)))
 	return out.Format("January")
 }
 
