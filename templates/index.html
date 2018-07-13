@@ -61,9 +61,9 @@
 				</div>
 				<div class="qcolumn" title="{{$vm.Total | formatCommas}}">{{$vm.Total | formatShortHand}}</div>
 				<div class="qcolumn" title="{{(index (index $.Pages.Years $iy).Months $im).Total | formatCommas}}">{{(index (index $.Pages.Years $iy).Months $im).Total | formatShortHand}}</div>
-				<div class="qcolumn" title="{{(index (index $.Pages.Years $iy).Months $im).Min | formatCommas}}">{{(index (index $.Pages.Years $iy).Months $im).Min | formatShortHand}}</div>
-				<div class="qcolumn" title="{{(index (index $.Pages.Years $iy).Months $im).Max | formatCommas}}">{{(index (index $.Pages.Years $iy).Months $im).Max | formatShortHand}}</div>
-				<div class="qcolumn" title="{{(index (index $.Pages.Years $iy).Months $im).Avg | formatCommas}}">{{(index (index $.Pages.Years $iy).Months $im).Avg | formatShortHand}}</div>
+				<div class="qcolumn secondary" title="{{(index (index $.Pages.Years $iy).Months $im).Min | formatCommas}}">{{(index (index $.Pages.Years $iy).Months $im).Min | formatShortHand}}</div>
+				<div class="qcolumn secondary" title="{{(index (index $.Pages.Years $iy).Months $im).Max | formatCommas}}">{{(index (index $.Pages.Years $iy).Months $im).Max | formatShortHand}}</div>
+				<div class="qcolumn secondary" title="{{(index (index $.Pages.Years $iy).Months $im).Avg | formatCommas}}">{{(index (index $.Pages.Years $iy).Months $im).Avg | formatShortHand}}</div>
 			</div>
 			{{end}}
 			<div class="qrow">
