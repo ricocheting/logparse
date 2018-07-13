@@ -45,6 +45,15 @@ func (st *StatTotal) AddTotal(y, m, d []byte, ni []byte) *StatTotal {
 	sm.Total += i
 	sm.AddDayNum(d, ni)
 
+	sm.Avg = (sm.Total / uint64(len(sm.Days)))
+
+	if sm.Min == 0 || sm.Min > i { // if it's today, ignore
+		sm.Min = i
+	}
+	if sm.Max < i {
+		sm.Max = i
+	}
+
 	if sm.Date.IsZero() {
 		sm.Date, _ = time.Parse("200601", string(y)+string(m))
 	}
@@ -92,6 +101,9 @@ type StatMonth struct {
 	Date  time.Time             // timestamp for this month. so we can get that "201701" means save info to path /2017/01-January.html
 	Total uint64                //this months's total
 	Days  map[uint8]interface{} //.Days[DD]=35
+	Min   uint64
+	Max   uint64
+	Avg   uint64
 }
 
 func (sm *StatMonth) Get(d []byte) interface{} {
