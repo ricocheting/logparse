@@ -18,6 +18,21 @@ func (s Stats) ToSlice(min uint64) []Stat { //still used on ghetto.go
 	return out[:len(out):len(out)] // trim the slice to release the unused memory
 }
 
+//IsPage determines if an extension is a "page" extention (eg; html is page while jpg is not)
+func IsPage(extension string) bool {
+	// if the ext starts with "." strip it off
+	if len(extension) > 0 && extension[0] == '.' {
+		extension = extension[1:]
+	}
+
+	// list of valid ese
+	if extension == "" || extension == "shtml" || extension == "php" || extension == "htm" || extension == "html" {
+		return true
+	}
+
+	return false
+}
+
 //IsNewerDay checks (while ignoring timezone) has the date rolled over
 func IsNewerDay(startDate, compDate time.Time) bool {
 	/*y1, m1, d1 := date1.Date()

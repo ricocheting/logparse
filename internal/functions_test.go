@@ -38,3 +38,12 @@ func TestFormatMonth(t *testing.T) {
 	fmt.Println(FormatMonth(12))
 	fmt.Println(FormatMonth(13))
 }
+
+func TestIsPage(t *testing.T) {
+
+	fmt.Println(IsPage(".no"))
+	fmt.Println(IsPage("no"))
+	fmt.Println(IsPage(""))
+	fmt.Println(IsPage(".shtml"))
+	fmt.Println(IsPage("shtml"))
+}

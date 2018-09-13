@@ -86,7 +86,7 @@ func (st *Store) ListPages(bucket []byte) (internal.StatTotal, error) {
 			var n uint64 = 0
 
 			for key, value := range worker {
-				if key == "" || key == ".shtml" || key == ".php" || key == ".htm" || key == ".html" {
+				if internal.IsPage(key) {
 					n += value
 				}
 			}
