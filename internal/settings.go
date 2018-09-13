@@ -16,6 +16,7 @@ var StatusCodeNames = map[string]string{
 	"416": "Range Not Satisfiable", //asked to resume on part of the file that doesn't exist
 	"499": "Client Closed Request",
 	"500": "Internal Server Error",
+	"504": "Gateway Timeout Error",
 }
 
 var (
