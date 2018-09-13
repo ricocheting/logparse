@@ -1,6 +1,7 @@
 package storage
 
 // NOTE: you can't run more than one of these at a time as the Bolt database will lock each other. so use
+// # cd ./logparse/storage
 // # go test -run=TestDumpRawBoltHitsData
 
 import (
@@ -98,3 +99,42 @@ func TestDumpRawBoltExtensionsData(t *testing.T) {
 		return nil
 	})
 }
+
+// RAW dump the extensions in the database
+func TestDumpRawBoltDirectoriesData(t *testing.T) {
+	fmt.Println("\nTestDumpRawBoltDirectoriesData")
+
+	db, err := bolt.Open("../data/db", 0600, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	db.View(func(tx *bolt.Tx) error {
+		// Assume bucket exists and has keys
+		b := tx.Bucket([]byte(internal.DirectoriesBucket))
+
+		b.ForEach(func(k []byte, v []byte) error {
+			fmt.Printf("key=%s, value=%s\n", k, v)
+			return nil
+		})
+		return nil
+	})
+}
+
+// DANGEROUS clear the contents of a bucket
+/*func TestDELETE(t *testing.T) {
+	fmt.Println("\nTestDELETE")
+
+	db, err := bolt.Open("../data/db", 0600, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	db.Update(func(tx *bolt.Tx) error {
+		tx.DeleteBucket(internal.DirectoriesBucket)
+		tx.CreateBucketIfNotExists(internal.DirectoriesBucket)
+		return nil
+	})
+}*/

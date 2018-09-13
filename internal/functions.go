@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -20,6 +21,8 @@ func (s Stats) ToSlice(min uint64) []Stat { //still used on ghetto.go
 
 //IsPage determines if an extension is a "page" extention (eg; html is page while jpg is not)
 func IsPage(extension string) bool {
+	extension = strings.ToLower(strings.ToLower(extension))
+
 	// if the ext starts with "." strip it off
 	if len(extension) > 0 && extension[0] == '.' {
 		extension = extension[1:]

@@ -20,11 +20,11 @@
 			<div class="container-fluid">
 				<div class="navbar-header">
 					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-				  <span class="sr-only">Toggle navigation</span>
-				  <span class="icon-bar"></span>
-				  <span class="icon-bar"></span>
-				  <span class="icon-bar"></span>
-				</button>
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
 					<a class="navbar-brand" href="../">{{.Domain}}</a>
 				</div>
 				<div id="navbar" class="navbar-collapse collapse">
@@ -87,6 +87,28 @@
 
 
 		<div id="contents">
+			<h3>Directories</h3>
+			<div class="fcontain">
+				{{range $day, $v := .Directories.Days}}
+				<div class="fw">
+					<h5>{{$.Hits.Date | formatShortMonth}} {{printf "%.02d" $day}}</h5>
+					<table class="table table-bordered table-condensed">
+						<tbody>
+							{{range $name, $value := $v}}
+							<tr>
+								<td>{{if eq $name ""}}./{{else}}{{$name}}{{end}}</td>
+								<td>{{$value | formatCommas}}</td>
+							</tr>
+							{{end}}
+						</tbody>
+					</table>
+				</div>
+				{{end}}
+			</div>
+		</div>
+
+
+		<div id="contents">
 			<h3>Status Codes</h3>
 			<div class="fcontain">
 				{{range $day, $v := .StatusCodes.Days}}
@@ -96,7 +118,7 @@
 						<tbody>
 							{{range $name, $value := $v}}
 							<tr>
-								<td title="{{$name | formatStatusCode}}" {{if eq $name "200" "304"}}class="status-green" {{end}}>{{$name}}</td>
+								<td title="{{$name | formatStatusCode}}" {{if eq $name "200" "304"}} class="status-green" {{end}}>{{$name}}</td>
 								<td>{{$value | formatCommas}}</td>
 							</tr>
 							{{end}}

@@ -18,6 +18,7 @@ type PageMonth struct {
 	IPS         internal.StatMonth
 	Pages       internal.StatMonth
 	Extensions  internal.StatMonth
+	Directories internal.StatMonth
 	StatusCodes internal.StatMonth
 	DateCreated string
 	Domain      string
@@ -52,6 +53,7 @@ func main() {
 	ips, _ := store.ListBaseNumber(internal.IPSBucket)
 	pages, _ := store.ListPages(internal.ExtensionsBucket)
 	extensions, _ := store.ListBaseStats(internal.ExtensionsBucket)
+	directories, _ := store.ListBaseStats(internal.DirectoriesBucket)
 	statusCodes, _ := store.ListBaseStats(internal.StatusCodesBucket)
 	errors, _ := store.ListErrors(internal.ErrorsBucket)
 	page.DateCreated = time.Now().Format("Mon Jan _2 15:04:05 2006")
@@ -99,6 +101,22 @@ func main() {
 			page.IPS = *ips.Years[year].Months[month]
 			page.Pages = *pages.Years[year].Months[month]
 			page.Extensions = *extensions.Years[year].Months[month]
+
+			//if *directories.Years[year] && *directories.Years[year].Months[month] {
+			_, ok := directories.Years[year]
+
+			if ok {
+				_, ok = directories.Years[year].Months[month]
+
+				if ok {
+					page.Directories = *directories.Years[year].Months[month]
+				} else {
+					page.Directories = internal.StatMonth{}
+				}
+			} else {
+				page.Directories = internal.StatMonth{}
+			}
+
 			page.StatusCodes = *statusCodes.Years[year].Months[month]
 
 			filename := internal.PathFilename(month)

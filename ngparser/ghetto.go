@@ -25,6 +25,7 @@ const ( // StatTypes
 	Hits
 	UserAgents
 	Extensions
+	Directories
 
 	maxType
 )
@@ -113,12 +114,17 @@ func (p *Parser) Parse(r io.Reader, fn func(r *Record)) {
 
 	var startDate time.Time
 
+	// declare all vars used inside the loop
+	var cleanPath string
+	var ipCnt uint64
+	var ext string //extension
+
 	for r := range out {
 		if fn != nil {
 			fn(r)
 		}
 
-		cleanPath := r.Filename
+		cleanPath = r.Filename
 		if idx := strings.IndexByte(cleanPath, '?'); idx != -1 {
 			cleanPath = cleanPath[:idx]
 		}
@@ -147,7 +153,7 @@ func (p *Parser) Parse(r io.Reader, fn func(r *Record)) {
 		p.mux.Lock()
 
 		// how many IPv6 addresses
-		ipCnt := p.data[IPs][r.IP]
+		ipCnt = p.data[IPs][r.IP]
 		if strings.IndexByte(r.IP, ':') > -1 && ipCnt == 0 {
 			p.ipv6++
 		}
@@ -162,7 +168,23 @@ func (p *Parser) Parse(r io.Reader, fn func(r *Record)) {
 			p.data[Pages][cleanPath]++
 			//p.data[Hits][r.Filename]++
 			//p.data[UserAgents][r.UserAgent]++ // probably should parse the agent and store something like Chrome-XX, IE11, Edge, etc.
-			p.data[Extensions][strings.ToLower(filepath.Ext(cleanPath))]++
+			ext = strings.ToLower(filepath.Ext(cleanPath))
+			p.data[Extensions][ext]++
+
+			// log the directory here
+			if internal.IsPage(ext) {
+
+				parts := strings.Split(cleanPath, "/")
+
+				if (len(parts)) > 1 && len(parts[1]) > 0 {
+					if len(parts) > 2 {
+						p.data[Directories][parts[1]]++
+					} else {
+						p.data[Directories]["/"]++
+					}
+				}
+			}
+
 		} else if r.Status == "404" && r.Referer != "-" && p.domainRe != nil && len(r.Referer) < 255 && len(cleanPath) < 255 {
 			// if file and referer are the same, it's fake
 			if parsed := p.domainRe.FindAllStringSubmatch(r.Referer, -1); len(parsed) == 1 && len(parsed[0]) == 3 && parsed[0][2] != cleanPath {
@@ -262,6 +284,12 @@ func (p *Parser) saveData(dateKey []byte) {
 	err = p.store.SaveBaseStats(internal.ExtensionsBucket, dateKey, p.data[Extensions])
 	if err != nil {
 		panic("Error saveData() Extensions: " + err.Error())
+	}
+
+	//Directories
+	err = p.store.SaveBaseStats(internal.DirectoriesBucket, dateKey, p.data[Directories])
+	if err != nil {
+		panic("Error saveData() Directories: " + err.Error())
 	}
 
 	//StatusCodes

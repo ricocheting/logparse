@@ -22,6 +22,7 @@ var (
 	YearBucket        = []byte("year")
 	HitsBucket        = []byte("hits")
 	ExtensionsBucket  = []byte("extensions")
+	DirectoriesBucket = []byte("directories")
 	StatusCodesBucket = []byte("statuscodes")
 	IPSBucket         = []byte("ips")
 	ErrorsBucket      = []byte("errors")

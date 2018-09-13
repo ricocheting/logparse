@@ -37,6 +37,7 @@ func (st *Store) Open() error {
 		tx.CreateBucketIfNotExists(internal.YearBucket)
 		tx.CreateBucketIfNotExists(internal.HitsBucket)
 		tx.CreateBucketIfNotExists(internal.ExtensionsBucket)
+		tx.CreateBucketIfNotExists(internal.DirectoriesBucket)
 		tx.CreateBucketIfNotExists(internal.StatusCodesBucket)
 		tx.CreateBucketIfNotExists(internal.IPSBucket)
 		tx.CreateBucketIfNotExists(internal.ErrorsBucket)
