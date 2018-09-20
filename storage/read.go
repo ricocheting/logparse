@@ -121,7 +121,6 @@ func (st *Store) ListErrors(bucket []byte) ([]internal.StatErrorPage, error) {
 			return nil
 		})
 
-		// sorting outside the lock
 		//sort.Sort(data)
 		out = data.ToSlice(0)
 		sort.Slice(out, func(i, j int) bool { return out[i].Total > out[j].Total })
