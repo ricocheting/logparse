@@ -3,6 +3,7 @@ package internal
 import (
 	"encoding/binary"
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -158,4 +159,21 @@ func PathDirectory(y uint16) string {
 // PathFilename turns MM into "01-January.html"
 func PathFilename(m uint8) string {
 	return strconv.Itoa(int(m)) + "-" + FormatMonth(m) + ".html"
+}
+
+// TopTwentyStatsForDay
+func TopTwentyStatsForDay(s interface{}) []Stat {
+	var out []Stat
+
+	if st, ok := s.(Stats); ok {
+		out = st.ToSlice(0)
+
+		sort.Slice(out, func(i, j int) bool { return out[i].Value > out[j].Value })
+
+		if len(out) > 20 {
+			out = out[:20]
+		}
+	}
+
+	return out
 }
