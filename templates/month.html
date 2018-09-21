@@ -72,10 +72,10 @@
 					<h5>{{$.Hits.Date | formatShortMonth}} {{printf "%.02d" $day}}</h5>
 					<table class="table table-bordered table-condensed">
 						<tbody>
-							{{range $name, $value := $v}}
+							{{range $ext := $v | sortedTopTwenty}}
 							<tr>
-								<td>{{if eq $name ""}}./{{else}}{{$name}}{{end}}</td>
-								<td>{{$value | formatCommas}}</td>
+								<td>{{if eq $ext.Name ""}}./{{else}}{{$ext.Name}}{{end}}</td>
+								<td>{{$ext.Value | formatCommas}}</td>
 							</tr>
 							{{end}}
 						</tbody>
