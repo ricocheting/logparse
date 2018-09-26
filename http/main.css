@@ -102,3 +102,21 @@ footer .text-muted {
 	/* used for highlighting Status Codes */
 	background-color: #c1e9b2
 }
+
+/* arrow for H3 collapse */
+.arrow {
+	border: solid white;
+	border-width: 0 3px 3px 0;
+	padding: 3px;
+	float:right;
+	margin-top:8px;
+}
+
+.arrow.right {
+	transform: rotate(-45deg);
+}
+
+
+.arrow.down {
+	transform: rotate(45deg);
+}
