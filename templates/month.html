@@ -7,8 +7,52 @@
 
 	<title>{{.Domain}} Stats</title>
 
-	<link href="../bootstrap.min.css" rel="stylesheet">
-	<link href="../main.css" rel="stylesheet">
+	<link rel="stylesheet" href="../bootstrap.min.css">
+	<link rel="stylesheet" href="../main.css">
+	<script type="text/javascript" src="../jquery-3.3.1.min.js"></script>
+
+	<script type="text/javascript">
+		var cutoffTR = 20;
+
+		$(document).ready(function() {
+			$("#control-showall").click(function(e) {
+				e.preventDefault();
+
+				if ($(this).hasClass("btn-default")) {
+					$(this).removeClass("btn-default").addClass("btn-success");
+
+					$("div.fcontain").slideDown(400);
+					$(".fcontain table tr").show();
+				} else {
+					$(this).removeClass("btn-success").addClass("btn-default");
+
+					$("div.fcontain").slideUp(400);
+					HideCutoffTR(cutoffTR);
+				}
+
+			});
+
+			$("h3.btn").click(function() {
+				$(this).next("div").slideToggle(400);
+			});
+
+			HideCutoffTR(cutoffTR);
+		});
+
+		function HideCutoffTR(cutoff) {
+			var tr;
+
+			$(".fcontain table").each(function() {
+				// count tr
+				tr = $(this).find("tr");
+
+				// if it has more than 10 items in this list, hide everything over 20
+				if (tr.length > cutoff) {
+					tr.slice(cutoff).hide();
+				}
+			});
+		}
+	</script>
 
 </head>
 
@@ -32,6 +76,10 @@
 						<li><a href="../">Home</a></li>
 						<li><a href="../errors.html">Errors</a></li>
 					</ul>
+
+					<form class="navbar-form navbar-right">
+						<button class="btn btn-default" id="control-showall">Show All</button>
+					</form>
 				</div>
 				<!--/.nav-collapse -->
 			</div>
@@ -65,14 +113,14 @@
 
 
 		<div id="contents">
-			<h3>File Extensions</h3>
-			<div class="fcontain">
+			<h3 class="btn btn-primary btn-lg btn-block">File Extensions</h3>
+			<div class="fcontain" style="display:none;">
 				{{range $day, $v := .Extensions.Days}}
 				<div class="fw">
 					<h5>{{$.Hits.Date | formatShortMonth}} {{printf "%.02d" $day}}</h5>
 					<table class="table table-bordered table-condensed">
 						<tbody>
-							{{range $ext := $v | sortedTopTwenty}}
+							{{range $ext := $v | sortedStats}}
 							<tr>
 								<td>{{if eq $ext.Name ""}}./{{else}}{{$ext.Name}}{{end}}</td>
 								<td>{{$ext.Value | formatCommas}}</td>
@@ -87,14 +135,14 @@
 
 
 		<div id="contents">
-			<h3>Directories</h3>
-			<div class="fcontain">
+			<h3 class="btn btn-primary btn-lg btn-block">Directories</h3>
+			<div class="fcontain" style="display:none;">
 				{{range $day, $v := .Directories.Days}}
 				<div class="fw">
 					<h5>{{$.Hits.Date | formatShortMonth}} {{printf "%.02d" $day}}</h5>
 					<table class="table table-bordered table-condensed">
 						<tbody>
-							{{range $directory := $v | sortedTopTwenty}}
+							{{range $directory := $v | sortedStats}}
 							<tr>
 								<td>{{if eq $directory.Name "/"}}/{{else}}/{{$directory.Name}}/{{end}}</td>
 								<td>{{$directory.Value | formatCommas}}</td>
@@ -109,8 +157,8 @@
 
 
 		<div id="contents">
-			<h3>Status Codes</h3>
-			<div class="fcontain">
+			<h3 class="btn btn-primary btn-lg btn-block">Status Codes</h3>
+			<div class="fcontain" style="display:none;">
 				{{range $day, $v := .StatusCodes.Days}}
 				<div class="fw">
 					<h5>{{$.Hits.Date | formatShortMonth}} {{printf "%.02d" $day}}</h5>

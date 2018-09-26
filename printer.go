@@ -84,7 +84,7 @@ func main() {
 		"formatMonthYear":  internal.FormatMonthYear,
 		"pathDirectory":    internal.PathDirectory,
 		"pathFilename":     internal.PathFilename,
-		"sortedTopTwenty":  internal.TopTwentyStatsForDay,
+		"sortedStats":      internal.AllStatsForDay,
 	}
 
 	tIndex := template.Must(template.New("index.html").Funcs(fmap).ParseFiles(*templateFolder + "index.html"))

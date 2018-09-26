@@ -177,3 +177,16 @@ func TopTwentyStatsForDay(s interface{}) []Stat {
 
 	return out
 }
+
+// AllStatsForDay
+func AllStatsForDay(s interface{}) []Stat {
+	var out []Stat
+
+	if st, ok := s.(Stats); ok {
+		out = st.ToSlice(0)
+
+		sort.Slice(out, func(i, j int) bool { return out[i].Value > out[j].Value })
+	}
+
+	return out
+}
